@@ -1,0 +1,26 @@
+app = "paypilot"
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  DATABASE_PATH = "/data/paypilot.db"
+  SARVAM_MODEL = "sarvam-105b"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.checks]
+    [http_service.checks.health]
+      path = "/api/health"
+      interval = "30s"
+      timeout = "5s"
+
+[[mounts]]
+  source = "paypilot_data"
+  destination = "/data"

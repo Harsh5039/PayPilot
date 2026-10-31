@@ -1,0 +1,296 @@
+{
+  "concurrency": {
+    "users": 20,
+    "completed": 20,
+    "errors": [],
+    "duration_seconds": 11.25,
+    "requests": 210,
+    "p50_ms": 970,
+    "p95_ms": 1948,
+    "max_ms": 2168,
+    "users_detail": [
+      {
+        "user": 5,
+        "product": "insurance",
+        "sid": "sess_b987ba5c74",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 17,
+        "product": "insurance",
+        "sid": "sess_c4dba33275",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 7,
+        "product": "insurance",
+        "sid": "sess_40ae3ffa7f",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 1,
+        "product": "insurance",
+        "sid": "sess_2d4afc5377",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 19,
+        "product": "insurance",
+        "sid": "sess_ca319435f1",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 13,
+        "product": "insurance",
+        "sid": "sess_640b2c3310",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 9,
+        "product": "insurance",
+        "sid": "sess_71da75201a",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 16,
+        "product": "loan",
+        "sid": "sess_c012bb29d8",
+        "step": "offers",
+        "messages": 19
+      },
+      {
+        "user": 8,
+        "product": "loan",
+        "sid": "sess_e0308cc91b",
+        "step": "offers",
+        "messages": 19
+      },
+      {
+        "user": 6,
+        "product": "loan",
+        "sid": "sess_6c474e0454",
+        "step": "offers",
+        "messages": 19
+      },
+      {
+        "user": 11,
+        "product": "insurance",
+        "sid": "sess_6f079fb65c",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 4,
+        "product": "loan",
+        "sid": "sess_a1eda07432",
+        "step": "offers",
+        "messages": 19
+      },
+      {
+        "user": 18,
+        "product": "loan",
+        "sid": "sess_a96905e34c",
+        "step": "offers",
+        "messages": 19
+      },
+      {
+        "user": 14,
+        "product": "loan",
+        "sid": "sess_9c788d3f8c",
+        "step": "offers",
+        "messages": 19
+      },
+      {
+        "user": 3,
+        "product": "insurance",
+        "sid": "sess_c52f2a18cc",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 12,
+        "product": "loan",
+        "sid": "sess_d70a373576",
+        "step": "offers",
+        "messages": 19
+      },
+      {
+        "user": 2,
+        "product": "loan",
+        "sid": "sess_c5841a8610",
+        "step": "offers",
+        "messages": 19
+      },
+      {
+        "user": 15,
+        "product": "insurance",
+        "sid": "sess_146ca80225",
+        "step": "ins_done",
+        "messages": 15
+      },
+      {
+        "user": 0,
+        "product": "loan",
+        "sid": "sess_23d789bd69",
+        "step": "offers",
+        "messages": 19
+      },
+      {
+        "user": 10,
+        "product": "loan",
+        "sid": "sess_4f2761bfa8",
+        "step": "offers",
+        "messages": 19
+      }
+    ]
+  },
+  "findings": {
+    "eligibility_chip": {
+      "session_id": "sess_0a580b371a",
+      "reply": "What do you need today?",
+      "chips": [
+        {
+          "label": "Personal loan",
+          "value": "loan:500000"
+        },
+        {
+          "label": "Business loan",
+          "value": "loan:200000"
+        }
+      ],
+      "cards": [],
+      "consent_request": null,
+      "language": "en",
+      "step": "intent",
+      "tracker": {},
+      "notifications": []
+    },
+    "insurance_typed_family": {
+      "session_id": "sess_208831aa71",
+      "reply": "Happy to help with health cover. Who should it protect — just you, you and your spouse, or the whole family?",
+      "chips": [
+        {
+          "label": "Just me",
+          "value": "self"
+        },
+        {
+          "label": "Me and my spouse",
+          "value": "couple"
+        },
+        {
+          "label": "Family of four",
+          "value": "family"
+        }
+      ],
+      "cards": [],
+      "consent_request": null,
+      "language": "en",
+      "step": "ins_cover",
+      "tracker": {},
+      "notifications": []
+    },
+    "insurance_typed_cover": {
+      "session_id": "sess_208831aa71",
+      "reply": "What is the loan for? It changes which partners will look at it.",
+      "chips": [
+        {
+          "label": "Personal use",
+          "value": "purpose:personal"
+        },
+        {
+          "label": "Education",
+          "value": "purpose:education"
+        },
+        {
+          "label": "Medical",
+          "value": "purpose:medical"
+        },
+        {
+          "label": "Travel",
+          "value": "purpose:travel"
+        },
+        {
+          "label": "Wedding",
+          "value": "purpose:wedding"
+        },
+        {
+          "label": "Business",
+          "value": "purpose:business"
+        },
+        {
+          "label": "Home renovation",
+          "value": "purpose:home_renovation"
+        },
+        {
+          "label": "Debt consolidation",
+          "value": "purpose:debt_consolidation"
+        }
+      ],
+      "cards": [],
+      "consent_request": null,
+      "language": "en",
+      "step": "purpose",
+      "tracker": {},
+      "notifications": []
+    },
+    "insurance_after_typed_cover": {
+      "id": "sess_208831aa71",
+      "created_at": "2026-10-31T08:53:58+00:00",
+      "language": "en",
+      "product": "loan",
+      "step": "purpose"
+    },
+    "insurance_after_revocation": {
+      "step": "ins_declare",
+      "consents": []
+    },
+    "unrelated_client_read": {
+      "session_status": 200,
+      "policy_status": 200
+    },
+    "unrelated_client_declare": 200,
+    "amount_unclear_reply": {
+      "session_id": "sess_52652e846d",
+      "reply": "How long would you like to take to repay? A longer tenure means a smaller EMI but more interest.",
+      "chips": [
+        {
+          "label": "12 months",
+          "value": "tenure:12"
+        },
+        {
+          "label": "24 months",
+          "value": "tenure:24"
+        },
+        {
+          "label": "36 months",
+          "value": "tenure:36"
+        },
+        {
+          "label": "48 months",
+          "value": "tenure:48"
+        },
+        {
+          "label": "60 months",
+          "value": "tenure:60"
+        }
+      ],
+      "cards": [],
+      "consent_request": null,
+      "language": "en",
+      "step": "tenure",
+      "tracker": {},
+      "notifications": []
+    },
+    "amount_after_unclear_reply": 300000,
+    "malformed_choice_status": 500,
+    "unsupported_cover_choice": 200,
+    "unsupported_cover_grant": 500
+  }
+}

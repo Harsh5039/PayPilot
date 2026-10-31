@@ -1,0 +1,19 @@
+services:
+  paypilot:
+    build: .
+    container_name: paypilot-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Leave blank to run the offline rule agent; set it to use Sarvam-105B.
+      SARVAM_API_KEY: ${SARVAM_API_KEY:-}
+      PORT: "8000"
+      SARVAM_MODEL: ${SARVAM_MODEL:-sarvam-105b}
+      DATABASE_PATH: /data/paypilot.db
+      CONSENT_TTL_DAYS: ${CONSENT_TTL_DAYS:-30}
+    volumes:
+      - paypilot-data:/data
+    restart: unless-stopped
+
+volumes:
+  paypilot-data:

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: paypilot
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: SARVAM_API_KEY
+        sync: false            # set in the dashboard, never in the repo
+      - key: SARVAM_MODEL
+        value: sarvam-105b
+      - key: DATABASE_PATH
+        value: /tmp/paypilot.db   # free tier has no persistent disk; demo state resets on deploy

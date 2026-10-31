@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayPilot - Your financial assistant</title>
+<style>
+:root{--bg:#050e1b;--surface:rgba(255,255,255,.045);--surface2:rgba(255,255,255,.075);
+--border:rgba(255,255,255,.09);--text:#eaf2fb;--dim:#8aa1bd;--dimmer:#5f7691;
+--cyan:#00b9f1;--cyan-dim:rgba(0,185,241,.14);--amber:#ffb020;--green:#25c281;
+--green-dim:rgba(37,194,129,.14);--red:#f4526a;--paytm:#00baf2;
+--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow:hidden;display:grid;grid-template-rows:56px 1fr;
+background-image:radial-gradient(900px 520px at 14% -8%,rgba(0,186,242,.10),transparent 62%),radial-gradient(720px 440px at 96% 106%,rgba(255,176,32,.06),transparent 58%);
+-webkit-font-smoothing:antialiased}
+.top{display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--border);background:rgba(5,14,27,.72);gap:10px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{width:29px;height:29px;border-radius:9px;background:linear-gradient(150deg,var(--paytm),#0079b8);display:grid;place-items:center;font-weight:800;font-size:13px;color:#04121f}
+.brand b{font-size:14.5px}.brand b span{color:var(--cyan)}
+.brand small{display:block;font-family:var(--mono);font-size:9px;color:var(--dimmer);letter-spacing:.07em;text-transform:uppercase;margin-top:1px}
+.ctrls{display:flex;align-items:center;gap:8px}
+.langs,.seg{display:flex;gap:3px;background:rgba(0,0,0,.3);padding:3px;border-radius:9px;border:1px solid var(--border)}
+.langs button,.seg button{font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--dim);background:transparent;border:0;padding:6px 11px;border-radius:6px;cursor:pointer;transition:.14s}
+.langs button.on{color:var(--cyan);background:var(--cyan-dim)}
+.seg button.on{color:#04121f;background:var(--cyan)}
+.langs button:hover:not(.on),.seg button:hover:not(.on){color:var(--text)}
+.btn{font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border);padding:7px 12px;border-radius:8px;cursor:pointer}
+.btn:hover{background:var(--surface2)}
+.pill{font-family:var(--mono);font-size:9.5px;color:var(--dim);border:1px solid var(--border);padding:5px 10px;border-radius:20px;background:var(--surface);white-space:nowrap}
+.pill b{color:var(--green);font-weight:500}
+.stage{display:grid;grid-template-columns:minmax(380px,1fr) 480px;gap:24px;padding:18px 22px 20px;min-height:0}
+.phonecol{display:grid;place-items:center;min-height:0}
+.phone{width:378px;height:min(784px,100%);background:#fff;border-radius:40px;position:relative;
+box-shadow:0 0 0 9px #0c1a2c,0 0 0 10px rgba(255,255,255,.08),0 34px 70px -18px rgba(0,0,0,.85);
+display:flex;flex-direction:column;overflow:hidden;color:#0e1e33}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:122px;height:23px;background:#0c1a2c;border-radius:0 0 15px 15px;z-index:20}
+.statusbar{flex:0 0 auto;height:25px;display:flex;align-items:center;justify-content:space-between;padding:0 21px;font-size:10.5px;font-weight:700;color:#0b2545;background:#fff}
+.apphead{flex:0 0 auto;background:linear-gradient(158deg,#0b2545,#123a63 62%,#0b2545);color:#fff;padding:8px 14px 11px;display:flex;align-items:center;gap:10px}
+.apphead .wm{font-size:15px;font-weight:800;letter-spacing:-.5px}.apphead .wm span{color:var(--paytm)}
+.apphead .who{flex:1;min-width:0;border-left:1px solid rgba(255,255,255,.18);padding-left:10px}
+.apphead .who b{display:block;font-size:11px}.apphead .who small{font-size:8.5px;color:#8fb6d8;display:flex;align-items:center;gap:4px}
+.apphead .who small::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green)}
+.apphead .ic{width:25px;height:25px;border-radius:7px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:11px}
+.chat{flex:1;overflow-y:auto;padding:11px 11px 6px;background:#f4f7fb;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+.chat::-webkit-scrollbar{width:4px}.chat::-webkit-scrollbar-thumb{background:rgba(11,37,69,.16);border-radius:4px}
+.daychip{display:flex;align-items:center;gap:8px;margin:2px 0 3px}
+.daychip::before,.daychip::after{content:'';flex:1;height:1px;background:#dde6f0}
+.daychip span{font-family:var(--mono);font-size:8px;letter-spacing:.11em;color:#7f96ad;white-space:nowrap}
+.msg{display:flex;gap:7px;animation:pop .25s ease both}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg .av{flex:0 0 21px;height:21px;border-radius:6px;background:linear-gradient(150deg,var(--paytm),#0079b8);display:grid;place-items:center;font-size:9px;font-weight:800;color:#04121f;margin-top:2px}
+.msg .bd{background:#fff;border:1px solid #e2eaf3;border-radius:12px;border-top-left-radius:4px;padding:8px 11px;font-size:12px;line-height:1.5;color:#12263d;box-shadow:0 1px 2px rgba(11,37,69,.05);max-width:calc(100% - 28px);overflow-wrap:break-word;white-space:pre-wrap}
+.msg.user{justify-content:flex-end}
+.msg.user .bd{background:#0b2545;color:#fff;border:0;border-bottom-right-radius:4px;max-width:82%}
+.msg.user .av{display:none}
+.dots{display:inline-flex;gap:3px}.dots i{width:4px;height:4px;border-radius:50%;background:#93aec9;animation:bl 1.1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.chips{display:flex;flex-wrap:wrap;gap:5px;padding-left:28px;animation:pop .25s both}
+.chip{font-family:var(--font);font-size:11px;font-weight:600;color:#0b5f8a;background:#e8f7fd;border:1px solid #b6e6f8;padding:6px 10px;border-radius:15px;cursor:pointer;text-align:left;transition:.14s}
+.chip:hover{background:#d3f0fc;border-color:#7fd4f2}
+.card{background:#fff;border:1px solid #e2eaf3;border-radius:12px;padding:10px;margin-left:28px;box-shadow:0 2px 8px rgba(11,37,69,.07);animation:pop .28s both}
+.card h4{font-size:11.5px;color:#0b2545;margin-bottom:2px}
+.card .muted{font-size:10px;color:#6b8299;line-height:1.45}
+.tenurebar{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.tenurebar button{font-family:var(--mono);font-size:9px;padding:4px 7px;border-radius:5px;border:1px solid #dbe6f0;background:#f4f7fb;color:#4a6580;cursor:pointer}
+.tenurebar button.on{background:#0b2545;color:#fff;border-color:#0b2545}
+.offer{border:1px solid #e2eaf3;border-radius:10px;padding:9px;margin-top:7px;transition:.15s}
+.offer:hover{border-color:#7fd4f2;background:#f7fdff}
+.offer .row1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.offer .nm{font-size:11px;font-weight:700;color:#0b2545}
+.tag{font-family:var(--mono);font-size:7.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 5px;border-radius:4px;background:#e8f7fd;color:#0b6b96;white-space:nowrap}
+.tag.best{background:#e6f9f0;color:#0f7a4e}
+.offer .emi{font-size:17px;font-weight:800;color:#0b2545;letter-spacing:-.5px;margin-top:3px}
+.offer .emi span{font-size:9.5px;font-weight:500;color:#6b8299}
+.offer .meta{display:flex;gap:9px;margin-top:4px;font-size:9px;color:#6b8299;flex-wrap:wrap}
+.offer .meta b{color:#12263d}
+.link{font-family:var(--mono);font-size:8.5px;color:#0b6b96;background:none;border:0;cursor:pointer;padding:0;margin-top:5px;text-decoration:underline}
+.tag.warn{background:#fff0f2;color:#a3313f}
+.hlrow{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+.hlrow span{font-size:8.5px;font-weight:700;padding:3px 6px;border-radius:4px;background:#f0f6fb;color:#3d5a75;border:1px solid #dbe6f0}
+.hlrow span.g{background:#e6f9f0;color:#0f7a4e;border-color:#b9ecd4}
+.eminums{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.eminums span{font-family:var(--mono);font-size:8px;padding:2px 5px;border-radius:3px;background:#f4f7fb;color:#4a6580}
+.eminums span.on{background:#0b2545;color:#fff}
+.why{font-size:9px;color:#3d5a75;margin-top:5px;line-height:1.45;background:#f7fbff;border-left:2px solid #7fd4f2;padding:4px 6px;border-radius:0 4px 4px 0}
+.pick{display:flex;align-items:center;gap:5px;font-size:9px;color:#6b8299;margin-top:6px}
+.pick input{accent-color:#00baf2}
+.docrow2{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:8px;padding:7px 0;border-bottom:1px dashed #e8eef5;font-size:10px}
+.docrow2:last-child{border-bottom:0}
+.docrow2 .lb{flex:1;min-width:0}
+.docrow2 .ok2{max-width:46%;white-space:normal;text-align:right;line-height:1.35}
+.docrow2 .lb b{display:block;color:#12263d;font-size:10.5px}
+.docrow2 .lb small{color:#6b8299;font-size:8.5px;display:block;line-height:1.35}
+.docrow2 label{font-size:8.5px;font-weight:700;color:#0b5f8a;background:#eef4fa;padding:4px 7px;border-radius:5px;cursor:pointer;white-space:nowrap}
+.docrow2 input{display:none}
+.docrow2 .lb{grid-column:1;grid-row:1;overflow-wrap:anywhere}
+.docrow2 label{grid-column:2;grid-row:1}
+.doc-feedback{grid-column:1 / -1;padding:8px 10px;border-radius:7px;background:#fff5ed;color:#8a4215;font-size:10px;line-height:1.5;overflow-wrap:anywhere;min-width:0}
+.doc-feedback.passed{background:#edf9f2;color:#16764a}
+.doc-feedback ul{margin:5px 0 0;padding-left:16px}
+.doc-feedback li + li{margin-top:3px}
+.ok2{font-family:var(--mono);font-size:8px;color:#0f7a4e;background:#e6f9f0;padding:2px 5px;border-radius:4px;white-space:nowrap}
+.snap{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}
+.snap div{background:#f7fbff;border:1px solid #e2eaf3;border-radius:7px;padding:6px 8px}
+.snap .k{font-family:var(--mono);font-size:7.5px;letter-spacing:.06em;text-transform:uppercase;color:#7f96ad}
+.snap .v{font-size:12px;font-weight:800;color:#0b2545;margin-top:2px}
+.conf{border:1px solid #ffe0b2;background:#fffbf3;border-radius:8px;padding:8px;margin-top:6px}
+.conf .f{font-size:9px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:#9a6207}
+.conf .pair{display:flex;gap:8px;margin-top:4px;font-size:10px}
+.conf .pair div{flex:1;min-width:0}
+.conf .pair .k{color:#6b8299;font-size:8.5px}
+.conf .pair .v{font-weight:600;color:#12263d}
+.fld{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed #e8eef5;font-size:10.5px}
+.fld:last-of-type{border-bottom:0}.fld .k{color:#6b8299}.fld .v{font-weight:600;color:#12263d;text-align:right}
+.fld .v em{font-style:normal;font-family:var(--mono);font-size:7.5px;background:#e6f9f0;color:#0f7a4e;padding:1px 4px;border-radius:3px;margin-left:4px;vertical-align:1px}
+.upload{margin-top:8px;border:1px dashed #b6e6f8;background:#f7fdff;border-radius:9px;padding:8px;text-align:center}
+.upload label{font-size:10px;font-weight:700;color:#0b5f8a;cursor:pointer;display:block}
+.upload input{display:none}
+.upload .st{font-size:9px;color:#6b8299;margin-top:3px}
+.actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.actions button{flex:1;font-family:var(--font);font-size:10px;font-weight:700;padding:7px;border-radius:7px;border:0;cursor:pointer;background:#eef4fa;color:#0b5f8a}
+.actions button.pri{background:var(--paytm);color:#04121f}
+.actions button:hover{filter:brightness(.96)}
+.tl{margin-top:7px;display:flex;flex-direction:column}
+.tl .st{display:flex;gap:8px;position:relative;padding-bottom:9px}
+.tl .st:last-child{padding-bottom:0}
+.tl .st::before{content:'';position:absolute;left:5.5px;top:13px;bottom:0;width:1.5px;background:#e2eaf3}
+.tl .st:last-child::before{display:none}
+.tl .dot{flex:0 0 12px;height:12px;border-radius:50%;background:#e6f9f0;border:1.5px solid var(--green);display:grid;place-items:center;font-size:6.5px;color:#0f7a4e;margin-top:1px;z-index:1}
+.tl .dot.now{background:#fff5e3;border-color:var(--amber);color:#9a6207}
+.tl .tx{font-size:10px;color:#12263d;line-height:1.4}.tl .tx small{display:block;color:#6b8299;font-size:8.5px}
+.composer{flex:0 0 auto;border-top:1px solid #e2eaf3;background:#fff;padding:8px 10px 10px;display:flex;align-items:center;gap:6px}
+.composer input[type=text]{flex:1;min-width:0;font-family:var(--font);font-size:11.5px;color:#12263d;border:1px solid #e2eaf3;background:#f4f7fb;border-radius:18px;padding:8px 12px;outline:none}
+.composer input[type=text]:focus{border-color:#7fd4f2;background:#fff}
+.composer input::placeholder{color:#9db2c7}
+.mic,.send{flex:0 0 30px;height:30px;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer}
+.mic{background:#eef4fa;color:#0b5f8a}.mic.live{background:var(--red);color:#fff;animation:rec 1s infinite}
+@keyframes rec{0%,100%{box-shadow:0 0 0 0 rgba(244,82,106,.5)}70%{box-shadow:0 0 0 7px rgba(244,82,106,0)}}
+.send{background:#0b2545;color:#fff}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:15px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--border);flex:0 0 auto}
+.tabs button{flex:1;font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--dim);background:transparent;border:0;padding:13px 6px 11px;cursor:pointer;position:relative}
+.tabs button.on{color:var(--text)}
+.tabs button.on::after{content:'';position:absolute;left:14px;right:14px;bottom:-1px;height:2px;background:var(--cyan)}
+.tabbody{flex:1;overflow-y:auto;padding:16px;min-height:0}
+.tabbody::-webkit-scrollbar{width:4px}.tabbody::-webkit-scrollbar-thumb{background:rgba(255,255,255,.13);border-radius:4px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:12px;padding:24px}
+.empty .ring{width:44px;height:44px;border-radius:50%;border:1px dashed rgba(255,255,255,.22);display:grid;place-items:center;color:var(--dimmer);font-size:16px}
+.empty p{font-size:12px;line-height:1.6;color:var(--dimmer);max-width:280px}
+.tk-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.tk-head .t{font-size:13.5px;font-weight:700}.tk-head .m{font-family:var(--mono);font-size:9.5px;color:var(--dimmer);margin-top:3px}
+.badge{font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;white-space:nowrap}
+.badge.run{background:rgba(255,176,32,.15);color:var(--amber)}
+.badge.done{background:var(--green-dim);color:var(--green)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.kv .k{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dimmer)}
+.kv .v{font-size:12.5px;font-weight:600;margin-top:3px}
+.steps{padding-top:14px;display:flex;flex-direction:column}
+.stp{display:flex;gap:11px;position:relative;padding-bottom:15px}
+.stp:last-child{padding-bottom:0}
+.stp::before{content:'';position:absolute;left:7px;top:17px;bottom:0;width:1.5px;background:var(--border)}
+.stp:last-child::before{display:none}
+.stp .d{flex:0 0 15px;height:15px;border-radius:50%;display:grid;place-items:center;font-size:7px;margin-top:1px;z-index:1;border:1.5px solid var(--border);background:var(--bg);color:var(--dimmer)}
+.stp.done .d{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.stp.run .d{background:rgba(255,176,32,.15);border-color:var(--amber);color:var(--amber)}
+.stp .lb{font-size:12px;font-weight:600;color:var(--dim)}
+.stp.done .lb,.stp.run .lb{color:var(--text)}
+.stp .nt{font-size:10.5px;color:var(--dimmer);margin-top:2px;line-height:1.4}
+.crow{border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:9px;background:rgba(0,0,0,.14)}
+.crow .t{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.crow .sc{font-family:var(--mono);font-size:10.5px;color:var(--cyan);overflow-wrap:anywhere}
+.crow .pu{font-size:10.5px;color:var(--dim);margin-top:4px;line-height:1.45}
+.crow .ft{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:8.5px;color:var(--dimmer);margin-top:7px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.09);gap:8px}
+.crow .ft button{font-family:var(--font);font-size:9px;font-weight:700;color:#ffb0b8;background:rgba(244,82,106,.12);border:1px solid rgba(244,82,106,.3);padding:3px 7px;border-radius:5px;cursor:pointer}
+.modal{position:fixed;inset:0;background:rgba(3,8,15,.72);display:none;place-items:center;z-index:60;padding:24px}
+.modal.on{display:grid}
+.sheet{background:#0d1b2e;border:1px solid var(--border);border-radius:14px;max-width:640px;width:100%;max-height:82vh;display:flex;flex-direction:column;overflow:hidden}
+.sheet header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)}
+.sheet header b{font-size:13px}
+.sheet header button{background:none;border:0;color:var(--dim);font-size:18px;cursor:pointer}
+.sheet .body{overflow:auto;padding:14px 18px}
+.sheet table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10.5px}
+.sheet th{text-align:right;color:var(--dimmer);font-weight:500;padding:5px 4px;border-bottom:1px solid var(--border);font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+.sheet th:first-child,.sheet td:first-child{text-align:left}
+.sheet td{text-align:right;padding:4px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--dim)}
+.sheet tr:last-child td{border-bottom:0}
+@media(max-width:1080px){body{overflow:auto;grid-template-rows:56px auto}.stage{grid-template-columns:1fr}.panel{height:440px}.ctrls .pill{display:none}}
+.msg .bd{font-size:14px}.card .muted,.offer .meta{font-size:12px}.card h4,.offer .nm{font-size:13px}
+@media(max-width:600px){
+  body{display:flex;flex-direction:column;overflow:auto;min-height:100dvh;height:auto}
+  .top{flex-wrap:wrap;padding:10px 12px;gap:8px}.brand small{display:none}
+  .ctrls{flex-wrap:wrap;gap:5px;width:100%}.ctrls button{min-height:40px;padding:7px 10px}
+  .stage{display:flex;flex-direction:column;gap:16px;padding:12px;min-width:0}
+  .phonecol{display:block;min-width:0}.phone{width:100%;height:70dvh;min-height:420px;border-radius:16px;box-shadow:none}
+  .notch,.statusbar{display:none}.chat{padding:12px}.panel{height:360px;width:100%;min-width:0}
+  .chip{font-size:13px;min-height:42px}.card{margin-left:0}.msg .bd{font-size:14px}
+  .modal{padding:10px}.sheet{max-height:90dvh}.brand{flex:none}
+}
+.consent-list {list-style:none;padding:0;margin:10px 0;counter-reset:scope}
+.consent-list li {padding:10px 12px;margin:8px 0;background:#f4f8fc;border:1px solid #dce8f4;border-radius:10px;font-size:12px;line-height:1.5}
+.consent-list li b {display:block;color:#103457;font-size:12px}
+.consent-list li b::before {counter-increment:scope;content:counter(scope) ". ";color:#0088b7}
+.consent-list p {margin:5px 0;color:#50647a;font-size:11px}
+.nominee-form {margin-top:12px;display:grid;gap:8px;font-size:12px}
+.nominee-form input {width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbdcea;border-radius:8px;font:inherit}
+.nominee-form button {padding:8px;border:1px solid #8bd9f6;border-radius:8px;background:#e8f8ff;color:#005985;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">
+    <div class="mark">P</div>
+    <div><b>Pay<span>Pilot</span></b><small>Your financial assistant</small></div>
+  </div>
+  <div class="ctrls">
+    <div class="seg" id="prodSeg">
+      <button data-p="loan" class="on">Loans</button>
+      <button data-p="ins">Insurance</button>
+    </div>
+    <div class="langs" id="langRow">
+      <button data-l="en" class="on">EN</button>
+      <button data-l="hi">हिं</button>
+    </div>
+    <button class="btn" id="stopBtn">Stop chat</button>
+    <button class="btn" id="resetBtn">New chat</button>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="phonecol">
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="statusbar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center">
+          <svg width="13" height="9" viewBox="0 0 16 11" fill="#0b2545"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1"/></svg>
+          <svg width="13" height="9" viewBox="0 0 16 11" fill="none" stroke="#0b2545" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.8 6.9a6 6 0 0 1 8.4 0"/><circle cx="8" cy="9.4" r="1" fill="#0b2545" stroke="none"/></svg>
+          <svg width="20" height="9" viewBox="0 0 24 11" fill="none"><rect x=".6" y=".6" width="19" height="9.8" rx="2.6" stroke="#0b2545" stroke-opacity=".45"/><rect x="2.2" y="2.2" width="14" height="6.6" rx="1.4" fill="#0b2545"/></svg>
+        </span>
+      </div>
+      <div class="apphead">
+        <div class="wm">Paytm<span>.</span></div>
+        <div class="who"><b>PayPilot AI</b><small>Demo - no real transactions</small></div>
+        <div class="ic">⋯</div>
+      </div>
+      <div class="chat" id="chat"></div>
+      <div class="composer">
+        <button class="mic" id="micBtn" title="Speak">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        </button>
+        <input id="inp" type="text" autocomplete="off" placeholder="Type in English or Hindi">
+        <button class="send" id="sendBtn" aria-label="Send message">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5l18-8.5L3 3.5v6.7L15 12 3 13.8z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="tabs" id="tabs">
+      <button data-t="tracker" class="on">Your progress</button>
+      <button data-t="consent">Data permissions</button>
+      <button data-t="apps">Applications</button>
+    </div>
+    <div class="tabbody" id="tabBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <header><b id="modalTitle">Amortisation</b><button id="modalClose" aria-label="Close">×</button></header>
+    <div class="body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+let SID = null, TAB = 'tracker', LANG = 'en', PRODUCT = 'loan', BUSY = false, TRACKER = {};
+let generation = 0, activeRequest = null, recognition = null;
+const LS_SID = 'paypilot.session_id';
+const LS_UI = 'paypilot.ui';            // language, product and the last turn's cards/chips only
+const LS_SESSIONS = 'paypilot.product_sessions';
+function productSessions() { try { return JSON.parse(localStorage.getItem(LS_SESSIONS) || '{}'); } catch { return {}; } }
+let hindi = {}, languageObserver;
+const originalText = new WeakMap();
+function translatedText(source) {
+  if (LANG !== 'hi') return source;
+  const s = source.trim();
+  if (hindi[s]) return hindi[s];
+  if (s.startsWith('· ') && hindi[s.slice(2)]) return '· ' + hindi[s.slice(2)];
+  return source.replace(/(₹[\d,]+) lakh/g, '$1 लाख').replace(/(\d+) months/g, '$1 महीने')
+    .replace(/(\d+) years/g, '$1 वर्ष').replace(/(\d+)y\b/g, '$1 वर्ष')
+    .replace(/\/yr\b/g, '/वर्ष').replace(/\/year/g, '/वर्ष').replace(/\/mo\b/g, '/माह')
+    .replace(/approx\./g, 'लगभग').replace(/ equivalent/g, ' अनुमान')
+    .replace(/^Demo plans · (\d+) matched$/, 'डेमो प्लान · $1 विकल्प')
+    .replace(/^Proposal · /, 'प्रस्ताव · ').replace(/^Demo policy · issued$/, 'डेमो पॉलिसी · डेमो जारी')
+    .replace(/^Includes: /, 'इसमें शामिल हैं: ').replace(/^Premium held for 72 hours · /, 'प्रीमियम 72 घंटे के लिए तय · ')
+    .replace(/^Medical declaration accepted · none$/, 'स्वास्थ्य संबंधी घोषणा स्वीकार · कोई बीमारी नहीं')
+    .replace(/^Medical declaration accepted · diabetes$/, 'स्वास्थ्य संबंधी घोषणा स्वीकार · मधुमेह');
+}
+function translateUI() {
+  if (languageObserver) languageObserver.disconnect();
+  document.documentElement.lang = LANG;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (node.parentElement.closest('script,style,.msg.user')) continue;
+    const current = node.textContent;
+    const previous = originalText.get(node);
+    const source = previous && current === previous.rendered ? previous.source : current;
+    const rendered = translatedText(source);
+    originalText.set(node, {source, rendered});
+    if (rendered !== current) node.textContent = rendered;
+  }
+  inp.placeholder = LANG === 'hi' ? hindi['Type in English or Hindi'] : 'Type in English or Hindi';
+  document.getElementById('sendBtn').setAttribute('aria-label', LANG === 'hi' ? hindi['Send message'] : 'Send message');
+  if (languageObserver) languageObserver.observe(document.body, {childList:true, subtree:true, characterData:true});
+}
+
+function saveUI(extra) {
+  try {
+    if (SID) { const sessions = productSessions(); sessions[PRODUCT] = SID; localStorage.setItem(LS_SESSIONS, JSON.stringify(sessions)); }
+    const prev = JSON.parse(localStorage.getItem(LS_UI) || '{}');
+    localStorage.setItem(LS_UI, JSON.stringify(Object.assign(prev, { lang: LANG, product: PRODUCT }, extra || {})));
+  } catch (e) {}
+}
+function loadUI() {
+  try { return JSON.parse(localStorage.getItem(LS_UI) || '{}'); } catch (e) { return {}; }
+}
+const chatEl = document.getElementById('chat');
+const tabBody = document.getElementById('tabBody');
+const inp = document.getElementById('inp');
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const inr = n => '₹' + Number(Math.round(n)).toLocaleString('en-IN');
+const scroll = () => { chatEl.scrollTop = chatEl.scrollHeight; };
+
+async function api(path, opts = {}) {
+  const isForm = opts.body instanceof FormData;
+  const res = await fetch(path, {
+    signal: opts.signal,
+    method: opts.method || 'GET',
+    headers: isForm ? {} : { 'Content-Type': 'application/json' },
+    body: isForm ? opts.body : (opts.body ? JSON.stringify(opts.body) : undefined),
+  });
+  const text = await res.text();
+  let data = {};
+  try { data = text ? JSON.parse(text) : {}; } catch { data = { detail: text }; }
+  if (!res.ok) throw Object.assign(new Error('http_' + res.status), { status: res.status, data });
+  return data;
+}
+
+/* ---------------- chat ---------------- */
+function bubble(kind, text) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + kind;
+  d.innerHTML = (kind === 'bot' ? '<div class="av">P</div>' : '') + '<div class="bd">' + esc(text) + '</div>';
+  chatEl.appendChild(d); scroll(); return d;
+}
+function thinking() {
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  d.innerHTML = '<div class="av">P</div><div class="bd"><span class="dots"><i></i><i></i><i></i></span></div>';
+  chatEl.appendChild(d); scroll(); return d;
+}
+function cardEl(html) {
+  const d = document.createElement('div');
+  d.className = 'card'; d.innerHTML = html;
+  chatEl.appendChild(d); scroll(); return d;
+}
+function dayChip() {
+  const d = document.createElement('div');
+  d.className = 'daychip'; d.innerHTML = '<span>TODAY · SANDBOX DEMO</span>';
+  chatEl.appendChild(d); scroll();
+}
+function renderChips(list) {
+  if (!list || !list.length) return;
+  const w = document.createElement('div');
+  w.className = 'chips';
+  list.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'chip'; b.textContent = c.label;
+    b.onclick = () => { if (BUSY || !SID) return; w.remove(); bubble('user', c.label); send(c.label, c.value); };
+    w.appendChild(b);
+  });
+  chatEl.appendChild(w); scroll();
+}
+
+/* ---------------- cards ---------------- */
+const permissionLabels = {'paytm.profile': 'Paytm profile', 'paytm.income': 'Income, spending and existing EMIs', 'paytm.kyc': 'KYC verification', 'bureau.softpull': 'Soft credit check', 'bureau.hardpull': 'Formal credit check', 'lender.share': 'Share with your selected lender', 'documents.access': 'Read uploaded documents'};
+function renderConsent(request) {
+  if (!request || !request.items) return;
+  let h = '<h4>Your permission is needed</h4><ol class="consent-list">';
+  request.items.forEach(item => {
+    h += '<li><b>' + esc(permissionLabels[item.scope] || 'Data access') + '</b><p>' + esc(item.purpose) + '</p><p>Includes: ' + (item.data || []).map(esc).join(', ') + '</p></li>';
+  });
+  h += '</ol><div class="muted">Choose the consent option below to allow access. You can revoke permission under Data permissions.</div>';
+  cardEl(h);
+}
+
+function renderCard(card) {
+  switch (card.type) {
+    case 'offers': return renderOffers(card);
+    case 'snapshot': return renderSnapshot(card.data);
+    case 'conflicts': return renderConflicts(card.data);
+    case 'plans': return renderPlans(card.data);
+    case 'prefill': return renderPrefill(card.data);
+    case 'proposal': return renderProposal(card.data);
+    case 'documents': window.__appid = card.data.application_id; return renderDocs(card.data);
+    case 'review': return renderReview(card.data);
+    case 'status': return renderStatus(card.data, card.eta_hours);
+    case 'decision': return renderStatus(card.data);
+    case 'policy': return renderPolicy(card.data);
+    case 'eligibility': return renderSnapshot(card.data);
+  }
+}
+
+/* ---- financial health snapshot ---- */
+function renderSnapshot(d) {
+  const h0 = d.health || d;
+  let h = '<h4>Financial health</h4><div class="muted">' + esc(h0.basis || '') + '</div><div class="snap">';
+  const cells = [
+    ['Monthly income', inr(h0.monthly_income)],
+    ['Monthly spend', inr(h0.monthly_expenses)],
+    ['Existing EMIs', inr(h0.existing_obligations)],
+    ['Disposable', inr(h0.disposable_income)],
+    ['Affordable EMI', inr(h0.affordable_emi)],
+    ['Credit score', h0.credit_score + ' · ' + esc(h0.credit_band || '')],
+  ];
+  cells.forEach(c => { h += '<div><div class="k">' + c[0] + '</div><div class="v">' + c[1] + '</div></div>'; });
+  h += '</div>';
+  if (h0.credit_simulated) h += '<div class="hlrow"><span style="background:#fff5e3;color:#9a6207;border-color:#ffe0b2">simulated credit score</span></div>';
+  if (h0.grade_label) h += '<div class="muted" style="margin-top:6px">Profile: <b>' + esc(h0.grade_label) + '</b> · ' + esc(h0.credit_provider || '') + '</div>';
+  if (d.stage_label) h += '<div class="hlrow"><span class="g">' + esc(d.stage_label) + '</span></div>';
+  if (d.partners) {
+    h += '<div style="margin-top:8px">';
+    d.partners.forEach(p => {
+      h += '<div class="fld"><span class="k">' + esc(p.lender_name) + '</span><span class="v">'
+        + (p.eligible ? '✓ up to ' + inr(p.cap) : '✕ ' + esc(String(p.failed_checks[0] || '').replace(/_/g, ' ')))
+        + '</span></div>';
+    });
+    h += '</div>';
+  }
+  if (d.notes && d.notes.length) h += '<div class="muted" style="margin-top:6px;color:#9a6207">' + esc(d.notes[0]) + '</div>';
+  cardEl(h);
+}
+
+/* ---- conflicts between what was said and what Paytm sees ---- */
+function renderConflicts(list) {
+  let h = '<h4>' + list.length + ' thing' + (list.length === 1 ? '' : 's') + ' to check</h4>';
+  list.forEach(c => {
+    h += '<div class="conf"><div class="f">' + esc(c.label) + '</div>'
+      + '<div class="pair"><div><div class="k">You said</div><div class="v">' + esc(c.yours) + '</div></div>'
+      + '<div><div class="k">Paytm shows</div><div class="v">' + esc(c.paytm) + '</div></div></div>'
+      + '<div class="muted" style="margin-top:5px">' + esc(c.question) + '</div></div>';
+  });
+  cardEl(h);
+}
+
+/* ---- comparison ---- */
+function renderOffers(card) {
+  const offers = card.data || [];
+  const tenures = card.tenures || [];
+  const sel = card.selected_tenure || (offers[0] && offers[0].tenure_months);
+  const hl = card.highlights || {};
+  let h = '<h4>Comparison · ' + offers.length + ' offer' + (offers.length === 1 ? '' : 's') + '</h4>'
+        + '<div class="hlrow" style="margin-bottom:5px"><span style="background:#fff5e3;color:#9a6207;border-color:#ffe0b2">simulated partner quotes</span></div>'
+        + '<div class="muted">Ranked by total repayment, fees and GST included.'
+        + (card.savings_vs_worst ? ' Best saves ' + inr(card.savings_vs_worst) + '.' : '') + '</div>';
+  if (card.budget_note) {
+    h += '<div class="why" style="border-left-color:#ffb020;background:#fffbf3;color:#9a6207">'
+      + esc(card.budget_note) + '</div>';
+  }
+
+  if (hl.lowest_total || hl.zero_fee) {
+    h += '<div class="hlrow">';
+    if (hl.lowest_rate) h += '<span class="g">lowest rate · ' + esc(hl.lowest_rate.lender_name) + ' ' + hl.lowest_rate.value + '%</span>';
+    if (hl.lowest_total) h += '<span class="g">lowest total · ' + esc(hl.lowest_total.lender_name) + '</span>';
+    if (hl.zero_fee && hl.zero_fee.length) h += '<span>zero fee · ' + esc(hl.zero_fee.join(', ')) + '</span>';
+    if (hl.flexible_prepayment) h += '<span>free prepayment · ' + esc(hl.flexible_prepayment.lender_name) + '</span>';
+    h += '</div>';
+  }
+
+  if (tenures.length) {
+    h += '<div class="tenurebar">' + tenures.map(t =>
+      '<button class="' + (t === sel ? 'on' : '') + '" data-tenure="' + t + '">' + t + 'm</button>').join('') + '</div>';
+  }
+
+  offers.forEach((o, i) => {
+    const badge = o.within_budget === false ? '<span class="tag warn">over budget</span>'
+                : o.within_budget === true ? '<span class="tag best">in budget</span>' : '';
+    h += '<div class="offer" data-offer="' + esc(o.offer_id) + '">'
+      + '<div class="row1"><span class="nm">' + esc(o.lender_name) + '</span>'
+      + '<span>' + badge + ' <span class="tag ' + (o.recommended ? 'best' : '') + '">'
+      + (o.recommended ? 'recommended' : '#' + o.rank) + '</span></span></div>'
+      + '<div class="emi">' + inr(o.emi) + '<span> /month · ' + o.tenure_months + ' mo</span></div>'
+      + '<div class="meta"><span>rate <b>' + o.annual_rate.toFixed(2) + '%</b></span>'
+      + '<span>APR <b>' + o.apr.toFixed(2) + '%</b></span>'
+      + '<span>fee <b>' + inr(o.processing_fee) + '</b></span></div>'
+      + '<div class="meta"><span>charges <b>' + inr(o.total_charges) + '</b></span>'
+      + '<span>interest <b>' + inr(o.total_interest) + '</b></span>'
+      + '<span>total <b>' + inr(o.total_payable) + '</b></span></div>';
+
+    if (o.emi_by_tenure) {
+      h += '<div class="eminums">' + Object.keys(o.emi_by_tenure).map(t =>
+        '<span class="' + (String(t) === String(o.tenure_months) ? 'on' : '') + '">' + t + 'm ' + inr(o.emi_by_tenure[t]) + '</span>').join('') + '</div>';
+    }
+    if (o.why) h += '<div class="why">' + esc(o.why) + '</div>';
+    if (o.prepayment) h += '<div class="muted" style="margin-top:4px">Prepayment: ' + esc(o.prepayment) + '</div>';
+
+    h += '<button class="link" data-sched="' + esc(JSON.stringify([o.amount, o.annual_rate, o.tenure_months, o.processing_fee_pct])) + '">Repayment schedule</button>'
+      + '<label class="pick"><input type="checkbox" data-cmp="' + esc(o.offer_id) + '"> compare this lender</label>'
+      + '</div>';
+  });
+  h += '<div class="actions"><button data-cmpsubmit="1">Compare selected</button></div>';
+
+  const el = cardEl(h);
+  el.querySelectorAll('[data-tenure]').forEach(b => {
+    b.onclick = () => { el.remove(); bubble('user', b.dataset.tenure + ' months'); send(b.dataset.tenure + ' months', 'tenure:' + b.dataset.tenure); };
+  });
+  el.querySelectorAll('[data-sched]').forEach(b => {
+    b.onclick = () => showSchedule(...JSON.parse(b.dataset.sched));
+  });
+  el.querySelector('[data-cmpsubmit]').onclick = () => {
+    const ids = [...el.querySelectorAll('[data-cmp]:checked')].map(x => x.dataset.cmp);
+    if (ids.length < 2) { bubble('bot', 'Tick two lenders to compare them side by side.'); return; }
+    showCompare(ids, offers[0].amount, offers[0].tenure_months);
+  };
+}
+
+/* ---- documents ---- */
+function renderDocs(d) {
+  chatEl.querySelectorAll('[data-document-card]').forEach(el => el.remove());
+  chatEl.querySelectorAll('.chips').forEach(el => {
+    if (Array.from(el.querySelectorAll('button')).some(b => ['Check again', 'Continue to review'].includes(b.textContent))) el.remove();
+  });
+  const uploaded = d.uploaded || [];
+  let h = '<h4>Documents</h4>'
+    + '<div class="hlrow" style="margin-bottom:5px"><span style="background:#fff5e3;color:#9a6207;border-color:#ffe0b2">PDF field checks - demo only, not authenticity verification</span></div>'
+    + '<div class="muted"><a href="/static/demo_salary_slip.pdf" target="_blank" download>Sample salary slip</a> · <a href="/static/demo_bank_statement.pdf" target="_blank" download>Sample bank statement</a> · <a href="/static/demo_pan.pdf" target="_blank" download>Sample PAN</a></div>'
+    + '<div class="muted">'
+    + (d.complete ? 'Required demo evidence matched (not issuer-authenticated).' : 'Upload valid PDF evidence. Scanned images require manual review and cannot auto-pass.')
+    + '</div>';
+  (d.required || []).forEach(req => {
+    const up = uploaded.find(u => u.doc_type === req.doc_type);
+    h += '<div class="docrow2"><div class="lb"><b>' + esc(req.label) + '</b><small>' + esc(req.purpose) + '</small></div>';
+    if (up) {
+      const status = up.verification_status || 'pending';
+      const messages = {
+        account_holder_name_does_not_match_paytm_kyc: 'The name on this document does not match your Paytm KYC name.',
+        not_identifiable_as_salary_slip: 'This document could not be identified as a salary slip.',
+        net_salary_not_found: 'Net salary could not be found.',
+        pay_period_not_found: 'The salary period could not be found.'
+      };
+      const reasons = up.failure_reasons || [];
+      h += '<div class="doc-feedback' + (up.verified ? ' passed' : '') + '" role="status"><b>'
+        + esc(up.verified ? 'Document matched' : status.replace(/_/g, ' ')) + '</b>'
+        + (reasons.length ? '<ul>' + reasons.map(reason => '<li>' + esc(messages[reason] || reason.replace(/_/g, ' ')) + '</li>').join('') + '</ul>' : '')
+        + (!up.verified ? '<div>Please replace this with the correct, readable document.</div>' : '') + '</div>';
+    }
+    if (!up || !up.verified) {
+      h += '<label for="doc-' + esc(req.doc_type) + '">' + (up ? 'Replace' : 'Upload') + '</label>'
+        + '<input id="doc-' + esc(req.doc_type) + '" type="file" accept="application/pdf,image/*" data-doc="' + esc(req.doc_type) + '">';
+    }
+    h += '</div>';
+  });
+  const extra = uploaded.filter(u => !(d.required || []).some(r => r.doc_type === u.doc_type));
+  extra.forEach(u => {
+    h += '<div class="docrow2"><div class="lb"><b>' + esc(u.doc_type) + '</b><small>' + esc(u.filename) + '</small></div>'
+      + '<span class="ok2">Uploaded</span></div>';
+  });
+  if (d.missing && d.missing.length) {
+    h += '<div class="muted" style="margin-top:6px;color:#9a6207">Still needed: '
+      + esc(d.missing.map(m => m.label).join(', ')) + '</div>';
+  }
+  h += '<div class="actions"><button data-doc-next>' + (d.complete ? 'Continue to review' : 'Check again') + '</button></div>';
+  if (d.complete) h += '<div class="muted">All required documents checked. Continue to review your application.</div>';
+  const el = cardEl(h);
+  el.dataset.documentCard = d.application_id;
+  el.querySelector('[data-doc-next]').onclick = () => {
+    if (BUSY || !SID) return;
+    const label = d.complete ? 'Continue to review' : 'Check again';
+    bubble('user', label);
+    send(label, d.complete ? 'continue' : 'refresh_docs');
+  };
+  el.querySelectorAll('input[type=file]').forEach(input => {
+    input.onchange = async () => {
+      const f = input.files[0]; if (!f || !d.application_id) return;
+      const docType = input.dataset.doc;
+      const fd = new FormData(); fd.append('file', f);
+      try {
+        const r = await api('/api/applications/' + d.application_id + '/documents/' + docType,
+          { method: 'POST', body: fd });
+        const latest = await api('/api/applications/' + d.application_id + '/documents');
+        if (latest.complete) {
+          await api('/api/applications/' + d.application_id + '/documents/verify', {method:'POST'});
+          const session = await api('/api/sessions/' + SID);
+          TRACKER = session.tracker || TRACKER;
+          if (TAB === 'tracker') renderTracker();
+        }
+        renderDocs(Object.assign({}, latest, { application_id: d.application_id }));
+        saveUI({lastTurn:{cards:[{type:'documents',data:Object.assign({}, latest, {application_id:d.application_id})}],chips:[]}});
+        bubble('bot', r.document.verification_status === 'matched_demo' ? 'Document matched against demo data.' : 'Document needs attention. See the details above.');
+      } catch (e) {
+        bubble('bot', 'Upload failed: ' + (e.message || 'Use a readable PDF under 8 MB.'));
+      }
+    };
+  });
+}
+
+/* ---- review: exactly what leaves Paytm ---- */
+function renderReview(d) {
+  let h = '<h4>Review before you approve</h4>'
+    + '<div class="muted">This is what ' + esc(d.lender) + ' will receive. Nothing is sent until you approve.</div>'
+    + '<div class="hlrow"><span class="g">reference ' + esc(d.reference) + '</span></div>'
+    + '<div style="margin-top:7px">';
+  d.fields.forEach(f => {
+    const mine = f.source === 'needs you';
+    h += '<div class="fld"><span class="k">' + esc(f.label) + '</span><span class="v"' + (mine ? ' style="color:#9a6207"' : '')
+      + '>' + esc(f.value) + (mine ? '' : '<em>' + esc(f.source) + '</em>') + '</span></div>';
+  });
+  h += '</div>';
+  h += '<div class="muted" style="margin-top:8px"><b>' + (d.documents || []).length + ' documents</b> · '
+    + esc((d.documents || []).map(x => x.label).join(', ') || 'none') + '</div>';
+  if (d.missing_documents && d.missing_documents.length) {
+    h += '<div class="muted" style="color:#a3313f">Missing: ' + esc(d.missing_documents.map(m => m.label).join(', ')) + '</div>';
+  }
+  h += '<div class="muted" style="margin-top:6px">Shared with <b>' + esc(d.shared_with) + '</b> only · consents: '
+    + esc((d.consents || []).join(', ')) + '</div>';
+  h += '<div class="muted" style="margin-top:6px">Terms: ' + inr(d.terms.amount) + ' · ' + d.terms.tenure_months
+    + ' months · ' + d.terms.annual_rate + '% · EMI ' + inr(d.terms.emi) + ' · total ' + inr(d.terms.total_payable) + '</div>';
+  cardEl(h);
+}
+
+/* ---- application status / tracking ---- */
+function renderStatus(a, eta) {
+  if (!a) return;
+  const done = ['approved', 'rejected'].includes(a.status);
+  let h = '<h4>' + esc(a.reference || a.id) + '</h4>'
+    + '<div class="hlrow" style="margin-bottom:5px"><span style="background:#fff5e3;color:#9a6207;border-color:#ffe0b2">simulated decision · not a real sanction</span></div>'
+    + '<div class="muted">' + esc(a.lender_name || a.lender || '') + ' · '
+    + '<span class="badge ' + (done ? 'done' : 'run') + '">' + esc(String(a.status).replace(/_/g, ' ')) + '</span></div>';
+  if (eta) h += '<div class="muted">Estimated decision: about ' + eta + ' hours</div>';
+  h += '<div class="tl">';
+  (a.events || []).forEach((e, i) => {
+    const last = i === (a.events || []).length - 1;
+    h += '<div class="st"><div class="dot' + (last ? ' now' : '') + '">' + (last ? '•' : '✓') + '</div>'
+      + '<div class="tx">' + esc(String(e.status).replace(/_/g, ' ')) + '<small>' + esc(e.note) + '</small></div></div>';
+  });
+  h += '</div><div class="actions"><button class="pri" data-summary="' + esc(a.id) + '">Download summary</button></div>';
+  const el = cardEl(h);
+  el.querySelector('[data-summary]').onclick = () => downloadSummary(a.id);
+}
+
+/* ---- insurance plan card ---- */
+function renderPlans(plans) {
+  let h = '<h4>Demo plans · ' + plans.length + ' matched</h4><div class="muted">Illustrative quotes only, no live insurer connection. Yearly premiums (monthly equivalent shown).</div>';
+  plans.forEach(p => {
+    h += '<div class="offer"><div class="row1"><span class="nm">' + esc(p.insurer) + ' · ' + esc(p.product) + '</span>'
+      + '<span class="tag ' + (p.recommended ? 'best' : '') + '">' + esc(p.tag) + '</span></div>'
+      + '<div class="emi">' + inr(p.annual_premium) + '<span> /year · approx. ' + inr(p.monthly_premium) + '/mo equivalent</span></div>'
+      + '<div class="meta"><span>cover <b>' + inr(p.sum_insured) + '</b></span>'
+      + '<span><b>' + p.network_hospitals.toLocaleString('en-IN') + '</b> hospitals</span>'
+      + '<span>PED <b>' + p.ped_waiting_years + 'y</b></span></div>'
+      + '<div class="meta" style="display:block;line-height:1.6">' + p.features.map(f => '· ' + esc(f)).join('<br>') + '</div>'
+      + '</div>';
+  });
+  cardEl(h);
+}
+
+function renderPrefill(d) {
+  let h = '<h4>Application · ' + esc(d.lender_name) + '</h4>'
+    + '<div class="muted" style="margin-bottom:5px">' + inr(d.amount) + ' · ' + d.tenure_months + ' months · '
+    + d.annual_rate + '% p.a.' + (d.reference ? ' · ' + esc(d.reference) : '') + '</div>';
+  d.fields.forEach(f => {
+    const mine = f.source === 'needs you';
+    h += '<div class="fld"><span class="k">' + esc(f.label) + '</span><span class="v"'
+      + (mine ? ' style="color:#9a6207"' : '') + '>' + esc(f.value)
+      + (mine ? '' : '<em>' + esc(f.source) + '</em>') + '</span></div>';
+  });
+  h += '<form class="nominee-form"><label>Nominee full name (optional)<input name="nominee" maxlength="120" autocomplete="off" placeholder="Enter nominee name"></label><span class="muted">Nominee is optional. Save a name or continue without one.</span><button type="submit">Save nominee</button><span role="status" aria-live="polite"></span></form>';
+  const el = cardEl(h);
+  const form = el.querySelector('form');
+  form.style.display = 'none';
+  const actions = document.createElement('div');
+  actions.className = 'chips';
+  el.appendChild(actions);
+  function nomineeActions(name) {
+    actions.replaceChildren();
+    const edit = document.createElement('button');
+    edit.className = 'chip';
+    edit.textContent = name ? 'Edit nominee' : 'Add nominee';
+    edit.onclick = () => { form.style.display = 'grid'; input.focus(); scroll(); };
+    const next = document.createElement('button');
+    next.className = 'chip';
+    next.textContent = name ? 'Looks right, continue' : 'Continue without nominee';
+    next.onclick = () => {
+      if (BUSY || !SID) return;
+      actions.remove();
+      form.style.display = 'none';
+      bubble('user', next.textContent);
+      send(next.textContent, 'continue');
+    };
+    actions.append(edit, next);
+  }
+  const input = form.elements.nominee;
+  const status = form.querySelector('[role="status"]');
+  api('/api/applications/' + encodeURIComponent(d.application_id)).then(r => {
+    input.value = r.application.nominee || '';
+    el.querySelectorAll('.fld').forEach(row => {
+      if (row.querySelector('.k').textContent === 'Nominee') row.querySelector('.v').textContent = input.value || 'Not on file';
+    });
+    nomineeActions(input.value);
+  }).catch(() => { status.textContent = 'Could not load nominee. Please try again.'; });
+  form.onsubmit = async event => {
+    event.preventDefault();
+    if (!input.value.trim()) { status.textContent = 'Nominee is optional. You can continue without adding one.'; return; }
+    const button = form.querySelector('button');
+    button.disabled = true;
+    try {
+      const r = await api('/api/applications/' + encodeURIComponent(d.application_id) + '/nominee', {method:'PATCH', body:{name:input.value.trim()}});
+      d.fields = r.fields;
+      el.querySelectorAll('.fld').forEach(row => {
+        if (row.querySelector('.k').textContent === 'Nominee') row.querySelector('.v').textContent = r.application.nominee;
+      });
+      status.textContent = 'Nominee saved.';
+      nomineeActions(r.application.nominee);
+      form.style.display = 'none';
+    } catch (e) { status.textContent = 'Could not save nominee: ' + e.message; }
+    finally { button.disabled = false; }
+  };
+}
+
+function renderProposal(d) {
+  const p = d.plan;
+  let h = '<h4>Proposal · ' + esc(p.insurer) + '</h4>'
+    + '<div class="muted" style="margin-bottom:5px">' + esc(p.product) + ' · ' + esc(p.members_label) + '</div>';
+  d.fields.forEach(f => {
+    const mine = f.source === 'needs you';
+    h += '<div class="fld"><span class="k">' + esc(f.label) + '</span><span class="v"'
+      + (mine ? ' style="color:#9a6207"' : '') + '>' + esc(f.value)
+      + (mine ? '' : '<em>' + esc(f.source) + '</em>') + '</span></div>';
+  });
+  cardEl(h);
+}
+
+function renderPolicy(p) {
+  let h = '<h4>Demo policy · ' + esc(String(p.status).replace(/_/g, ' ')) + '</h4>'
+    + '<div class="muted" style="color:#b65e13">Simulation only: no insurer confirmation or payment</div>'
+    + '<div class="muted">' + esc(p.insurer) + ' · ' + esc(p.product) + '</div><div class="tl" style="margin-top:7px">';
+  p.events.forEach((e, i) => {
+    const last = i === p.events.length - 1;
+    h += '<div class="st"><div class="dot' + (last ? ' now' : '') + '">' + (last ? '•' : '✓') + '</div>'
+      + '<div class="tx">' + esc(String(e.status).replace(/_/g, ' ')) + '<small>' + esc(e.note) + '</small></div></div>';
+  });
+  cardEl(h + '</div>');
+}
+
+/* ---------------- schedule modal ---------------- */
+async function showSchedule(principal, rate, tenure, fee) {
+  const modal = document.getElementById('modal');
+  document.getElementById('modalTitle').textContent = 'Amortisation · ' + inr(principal) + ' over ' + tenure + ' months';
+  document.getElementById('modalBody').innerHTML = '<div class="muted" style="color:#8aa1bd">Loading…</div>';
+  modal.classList.add('on');
+  try {
+    const d = await api('/api/loans/emi?principal=' + principal + '&annual_rate=' + rate +
+      '&tenure_months=' + tenure + '&processing_fee_pct=' + fee);
+    let h = '<div class="muted" style="margin-bottom:10px;color:#8aa1bd">EMI <b style="color:#eaf2fb">' + inr(d.emi)
+      + '</b> · total interest ' + inr(d.total_interest) + ' · total payable ' + inr(d.total_payable) + '</div>'
+      + '<table><thead><tr><th>Month</th><th>EMI</th><th>Interest</th><th>Principal</th><th>Balance</th></tr></thead><tbody>';
+    d.schedule.forEach(r => {
+      h += '<tr><td>' + r.month + '</td><td>' + inr(r.emi) + '</td><td>' + inr(r.interest)
+        + '</td><td>' + inr(r.principal) + '</td><td>' + inr(r.balance) + '</td></tr>';
+    });
+    document.getElementById('modalBody').innerHTML = h + '</tbody></table>';
+  } catch (e) {
+    document.getElementById('modalBody').innerHTML = '<div class="muted" style="color:#8aa1bd">Could not load the schedule.</div>';
+  }
+}
+let TENURE = null;
+async function showCompare(offerIds, amount, tenure) {
+  TENURE = tenure || null;
+  const modal = document.getElementById('modal');
+  document.getElementById('modalTitle').textContent = 'Side by side · ' + offerIds.length + ' lenders';
+  document.getElementById('modalBody').innerHTML = '<div class="muted" style="color:#8aa1bd">Loading…</div>';
+  modal.classList.add('on');
+  try {
+    const d = await api('/api/sessions/' + SID + '/loans/compare-selected',
+      { method: 'POST', body: { offer_ids: offerIds, amount: amount, tenure_months: TENURE } });
+    if (!d.rows) { document.getElementById('modalBody').innerHTML = '<div class="muted" style="color:#8aa1bd">' + esc(d.note || 'Nothing to compare.') + '</div>'; return; }
+    let h = '<div class="muted" style="color:#8aa1bd;margin-bottom:10px">Cheapest total: <b style="color:#eaf2fb">'
+      + esc(d.cheapest_total) + '</b> · cheapest rate: <b style="color:#eaf2fb">' + esc(d.cheapest_rate) + '</b></div>'
+      + '<table><thead><tr><th>Measure</th>' + d.offers.map(o => '<th>' + esc(o.lender_name) + '</th>').join('') + '</tr></thead><tbody>';
+    d.rows.forEach(r => {
+      h += '<tr><td>' + esc(r.label) + '</td>' + r.values.map((v, i) =>
+        '<td' + (r.best_index === i ? ' style="color:#25c281;font-weight:600"' : '') + '>' + esc(v) + '</td>').join('') + '</tr>';
+    });
+    document.getElementById('modalBody').innerHTML = h + '</tbody></table>';
+  } catch (e) {
+    document.getElementById('modalBody').innerHTML = '<div class="muted" style="color:#8aa1bd">Could not compare those two.</div>';
+  }
+}
+
+document.getElementById('modalClose').onclick = () => document.getElementById('modal').classList.remove('on');
+document.getElementById('modal').onclick = e => { if (e.target.id === 'modal') e.currentTarget.classList.remove('on'); };
+
+/* ---------------- summary download ---------------- */
+async function downloadSummary(appId) {
+  const d = await api('/api/applications/' + appId + '/summary');
+  const rows = d.schedule.map(r => `<tr><td>${r.month}</td><td>${inr(r.emi)}</td><td>${inr(r.interest)}</td><td>${inr(r.principal)}</td><td>${inr(r.balance)}</td></tr>`).join('');
+  const events = d.events.map(e => `<li><b>${esc(e.status.replace(/_/g, ' '))}</b> — ${esc(e.note)} <span class="t">${esc(e.at)}</span></li>`).join('');
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>PayPilot - Your financial assistant</title>
+<style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#12263d;margin:40px;max-width:760px}
+h1{font-size:20px;margin:0 0 4px}h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#6b8299;margin:26px 0 8px}
+.k{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eef2f7;font-size:13px}
+.k b{font-weight:600}table{width:100%;border-collapse:collapse;font-size:11px;font-family:ui-monospace,Menlo,monospace}
+th{text-align:right;color:#6b8299;font-size:9px;text-transform:uppercase;padding:5px 4px;border-bottom:1px solid #dbe6f0}
+td{text-align:right;padding:4px;border-bottom:1px solid #f2f6fa}th:first-child,td:first-child{text-align:left}
+ul{padding-left:18px;font-size:12px;line-height:1.7}li{margin-bottom:4px}.t{color:#93aec9;font-size:10px;font-family:ui-monospace,monospace}
+.note{font-size:11px;color:#6b8299;margin-top:26px;border-top:1px solid #eef2f7;padding-top:10px}.consent-list {list-style:none;padding:0;margin:10px 0;counter-reset:scope}
+.consent-list li {padding:10px 12px;margin:8px 0;background:#f4f8fc;border:1px solid #dce8f4;border-radius:10px;font-size:12px;line-height:1.5}
+.consent-list li b {display:block;color:#103457;font-size:12px}
+.consent-list li b::before {counter-increment:scope;content:counter(scope) ". ";color:#0088b7}
+.consent-list p {margin:5px 0;color:#50647a;font-size:11px}
+.nominee-form {margin-top:12px;display:grid;gap:8px;font-size:12px}
+.nominee-form input {width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbdcea;border-radius:8px;font:inherit}
+.nominee-form button {padding:8px;border:1px solid #8bd9f6;border-radius:8px;background:#e8f8ff;color:#005985;cursor:pointer}
+</style></head><body>
+<h1>PayPilot · loan summary</h1><div style="color:#6b8299;font-size:12px">${esc(d.application_id)} · generated ${esc(d.generated_at)}</div>
+<h2>Terms</h2>
+<div class="k"><span>Lender</span><b>${esc(d.lender)}</b></div>
+<div class="k"><span>Status</span><b>${esc(d.status)}</b></div>
+<div class="k"><span>Principal</span><b>${inr(d.principal)}</b></div>
+<div class="k"><span>Rate</span><b>${d.annual_rate}% p.a.</b></div>
+<div class="k"><span>Tenure</span><b>${d.tenure_months} months</b></div>
+<div class="k"><span>EMI</span><b>${inr(d.emi)}</b></div>
+<div class="k"><span>Processing fee</span><b>${inr(d.processing_fee)}</b></div>
+<div class="k"><span>Total interest</span><b>${inr(d.total_interest)}</b></div>
+<div class="k"><span>Total payable</span><b>${inr(d.total_payable)}</b></div>
+<h2>Timeline</h2><ul>${events}</ul>
+<h2>Amortisation</h2><table><thead><tr><th>Month</th><th>EMI</th><th>Interest</th><th>Principal</th><th>Balance</th></tr></thead><tbody>${rows}</tbody></table>
+<div class="note">Illustrative sandbox output. Partner terms are simulated; the lender's sanction letter is the binding document.</div>
+</body></html>`;
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'PayPilot-' + d.application_id + '.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------------- panels ---------------- */
+async function refreshPanels() {
+  if (!SID) return;
+  if (TAB === 'tracker') return renderTracker();
+  if (TAB === 'apps') return renderApplications();
+  if (TAB === 'consent') {
+    const d = await api('/api/sessions/' + SID + '/consent');
+    tabBody.innerHTML = consentHTML(d.ledger);
+    tabBody.querySelectorAll('[data-revoke]').forEach(b => {
+      b.onclick = async () => {
+        b.disabled = true; b.textContent = 'revoking…';
+        try { await api('/api/sessions/' + SID + '/consent/' + encodeURIComponent(b.dataset.revoke), { method: 'DELETE' }); }
+        catch (e) {}
+        refreshPanels();
+      };
+    });
+  }
+}
+function emptyHTML(msg) {
+  return '<div class="empty"><div class="ring">◌</div><p>' + msg + '</p></div>';
+}
+function renderTracker() {
+  const t = TRACKER;
+  if (!t || !t.active) {
+    tabBody.innerHTML = emptyHTML('Start an application in the chat to see your progress here.');
+    return;
+  }
+  let h = '<div class="tk-head"><div><div class="t">' + esc(t.title) + '</div><div class="m">' + esc(t.ref) + '</div></div>'
+    + '<span class="badge ' + (t.status === 'complete' ? 'done' : 'run') + '">' + esc(String(t.status).replace(/_/g, ' ')) + '</span></div><div class="kv">';
+  (t.meta || []).forEach(m => { h += '<div><div class="k">' + esc(m.k) + '</div><div class="v">' + esc(m.v) + '</div></div>'; });
+  h += '</div><div class="steps">';
+  t.steps.forEach(s => {
+    h += '<div class="stp ' + s.state + '"><div class="d">' + (s.state === 'done' ? '✓' : s.state === 'run' ? '•' : '') + '</div>'
+      + '<div><div class="lb">' + esc(s.label) + '</div>' + (s.note ? '<div class="nt">' + esc(s.note) + '</div>' : '') + '</div></div>';
+  });
+  tabBody.innerHTML = h + '</div>';
+}
+async function renderApplications() {
+  const panelGeneration = generation;
+  let d;
+  try { d = await api('/api/history'); }
+  catch (e) { tabBody.innerHTML = emptyHTML('Could not load applications.'); return; }
+  if (panelGeneration !== generation || TAB !== 'apps') return;
+  if (PRODUCT === 'ins') {
+    const policies = d.policies || [];
+    if (!policies.length) { tabBody.innerHTML = emptyHTML('Your insurance policies will appear here after you select a plan.'); return; }
+    tabBody.innerHTML = policies.map(p => '<div class="crow"><div class="t"><span class="sc">' + esc(p.insurer) + '</span><span class="badge">' + esc(p.status) + '</span></div><div class="pu">' + esc(p.product) + ' · ' + inr(p.sum_insured) + ' · ' + inr(p.annual_premium) + '/yr</div><div class="ft"><span>' + esc(p.id) + '</span><button data-policy="' + esc(p.id) + '">Open policy</button></div></div>').join('');
+    tabBody.querySelectorAll('[data-policy]').forEach(b => b.onclick = async () => {
+      try {
+        const r = await api('/api/policies/' + encodeURIComponent(b.dataset.policy));
+        document.getElementById('modalTitle').textContent = 'Demo policy';
+        document.getElementById('modalBody').innerHTML = '<p>' + esc(r.policy.insurer) + ' · ' + esc(r.policy.product) + '</p><p>' + esc(r.policy.status) + ' · ' + inr(r.policy.sum_insured) + '</p><p>Simulation only: no insurer confirmation or payment</p>';
+        document.getElementById('modal').classList.add('on');
+      } catch { bubble('bot', 'Could not load policies. Please try again.'); }
+    });
+    return;
+  }
+  const apps = d.applications || [];
+  if (!apps.length) {
+    tabBody.innerHTML = emptyHTML('Your loan applications will appear here once you start applying.');
+    return;
+  }
+  let h = '<div style="font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--dimmer);margin-bottom:11px;">'
+    + apps.length + ' application' + (apps.length === 1 ? '' : 's') + ' · newest first</div>';
+  apps.forEach(a => {
+    const done = ['approved', 'rejected'].includes(a.status);
+    h += '<div class="crow" data-app="' + esc(a.id) + '" style="cursor:pointer">'
+      + '<div class="t"><span class="sc">' + esc(a.reference || a.id) + '</span>'
+      + '<span class="badge ' + (done ? 'done' : 'run') + '">' + esc(String(a.status).replace(/_/g, ' ')) + '</span></div>'
+      + '<div class="pu">' + esc(a.lender_name) + ' · ' + inr(a.amount) + ' · ' + a.tenure_months + ' months · EMI ' + inr(a.emi) + '</div>'
+      + '<div class="ft"><span>' + esc(String(a.created_at || '').slice(0, 10)) + '</span>'
+      + '<span>' + (a.decision_at ? 'decided ' + esc(String(a.decision_at).slice(0, 10)) : 'open') + '</span>'
+      + '<span style="color:var(--cyan)">open ›</span></div></div>';
+  });
+  tabBody.innerHTML = h;
+  tabBody.querySelectorAll('[data-app]').forEach(el => {
+    el.onclick = () => openApplication(el.dataset.app);
+  });
+}
+
+async function openApplication(appId) {
+  const modal = document.getElementById('modal');
+  document.getElementById('modalTitle').textContent = 'Application';
+  document.getElementById('modalBody').innerHTML = '<div class="muted" style="color:#8aa1bd">Loading…</div>';
+  modal.classList.add('on');
+  try {
+    const d = await api('/api/applications/' + appId + '/summary');
+    const rows = [
+      ['Reference', esc(d.reference)], ['Status', esc(String(d.status).replace(/_/g, ' '))],
+      ['Lender', esc(d.lender)], ['Principal', inr(d.principal)],
+      ['Tenure', d.tenure_months + ' months'], ['Rate', d.annual_rate + '% p.a.'],
+      ['EMI', inr(d.emi)], ['Processing fee', inr(d.processing_fee)],
+      ['Total payable', inr(d.total_payable)],
+    ].map(r => '<div class="k" style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:11.5px">'
+      + '<span style="color:var(--dimmer)">' + r[0] + '</span><b style="color:var(--text)">' + r[1] + '</b></div>').join('');
+    const docs = (d.documents || []).length
+      ? d.documents.map(x => '<div style="font-size:11px;color:var(--dim);padding:3px 0">' + esc(x.label) + ' · ' + esc(x.filename)
+          + '</div>').join('')
+      : '<div style="font-size:11px;color:var(--dimmer)">No documents on this application.</div>';
+    const timeline = (d.events || []).map(e => '<div style="display:flex;gap:8px;font-size:10.5px;color:var(--dim);padding:3px 0">'
+      + '<span style="font-family:var(--mono);color:var(--dimmer);flex:0 0 62px">' + esc(String(e.at).slice(11, 19)) + '</span>'
+      + '<span><b style="color:var(--text)">' + esc(String(e.status).replace(/_/g, ' ')) + '</b> — ' + esc(e.note) + '</span></div>').join('');
+    document.getElementById('modalBody').innerHTML =
+      '<div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin-bottom:8px">simulated application · not a real sanction</div>'
+      + rows
+      + '<div style="margin-top:14px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--dimmer)">Documents</div>' + docs
+      + '<div style="margin-top:14px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--dimmer)">Timeline</div>' + timeline
+      + '<div class="actions" style="margin-top:14px"><button class="pri" id="dl-' + esc(appId) + '">Download summary</button></div>';
+    document.getElementById('dl-' + appId).onclick = () => downloadSummary(appId);
+  } catch (e) {
+    document.getElementById('modalBody').innerHTML = '<div class="muted" style="color:#8aa1bd">Could not load that application.</div>';
+  }
+}
+
+function consentHTML(ledger) {
+  if (!ledger || !ledger.length) return emptyHTML('You have not shared any data yet. Permissions you allow will appear here, with their purpose and expiry date.');
+  let h = '<div style="font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--dimmer);margin-bottom:11px;">'
+    + ledger.length + ' permissions</div>';
+  ledger.forEach(c => {
+    const live = c.status === 'granted';
+    h += '<div class="crow"><div class="t"><span class="sc">' + esc(permissionLabels[c.scope] || 'Data access') + '</span>'
+      + '<span class="badge ' + (live ? 'done' : 'run') + '">' + esc(c.status) + '</span></div>'
+      + '<div class="pu">' + esc(c.purpose) + '</div>'
+      + '<div class="ft"><span>granted ' + esc((c.granted_at || '').slice(11, 19)) + '</span>'
+      + '<span>' + (live ? 'expires ' + esc((c.expires_at || '').slice(0, 10)) : 'revoked') + '</span>'
+      + (live ? '<button data-revoke="' + esc(c.scope) + '">Revoke</button>' : '')
+      + '</div></div>';
+  });
+  return h;
+}
+document.querySelectorAll('#tabs button').forEach(b => {
+  b.onclick = () => {
+    TAB = b.dataset.t;
+    document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+    refreshPanels();
+  };
+});
+
+/* ---------------- turn ---------------- */
+function paintTurn(r) {
+  if (r.product) {
+    PRODUCT = r.product === 'insurance' ? 'ins' : 'loan';
+    document.querySelectorAll('#prodSeg button').forEach(b => b.classList.toggle('on', b.dataset.p === PRODUCT));
+  }
+  bubble('bot', r.reply);
+  renderConsent(r.consent_request);
+  (r.cards || []).forEach(renderCard);
+  if (!(r.cards || []).some(c => ['prefill', 'documents'].includes(c.type))) renderChips(r.chips);
+  if (r.tracker) TRACKER = r.tracker;
+  if (TAB === 'tracker') renderTracker(); else refreshPanels();
+  // The transcript comes back from the server on reload; only the cards and
+  // chips of the current turn are client-only state, so those are what we keep.
+  saveUI({ lastTurn: { consent_request: r.consent_request || null, cards: r.cards || [], chips: r.chips || [] } });
+}
+
+async function send(text, choice) {
+  if (!SID || BUSY) return;
+  BUSY = true;
+  const turnGeneration = generation;
+  activeRequest = new AbortController();
+  const t = thinking();
+  try {
+    const r = await api('/api/chat', { method: 'POST', signal: activeRequest.signal, body: { session_id: SID, text: text || '', choice: choice || null, language: LANG } });
+    t.remove(); if (turnGeneration === generation) paintTurn(r);
+  } catch (err) {
+    t.remove();
+    if (turnGeneration !== generation) return;
+    bubble('bot', 'We could not send your message. Please try again.');
+  } finally { if (turnGeneration === generation) { BUSY = false; activeRequest = null; } }
+}
+
+function stopChat() {
+  generation++;
+  if (activeRequest) activeRequest.abort();
+  activeRequest = null;
+  if (recognition) { recognition.onresult = null; recognition.abort(); recognition = null; }
+  BUSY = false;
+  SID = null;
+  TRACKER = {};
+  localStorage.removeItem(LS_SID);
+  localStorage.removeItem(LS_UI);
+  inp.value = '';
+  chatEl.querySelectorAll('.chips').forEach(el => el.remove());
+}
+document.getElementById('stopBtn').onclick = () => {
+  stopChat();
+  chatEl.innerHTML = '';
+  tabBody.innerHTML = '';
+  bubble('bot', 'Chat stopped. Select New chat to start again.');
+};
+async function newSession() {
+  stopChat();
+  const sessionGeneration = generation;
+  BUSY = true;
+  chatEl.innerHTML = ''; dayChip();
+  bubble('bot', 'Connecting to PayPilot…');
+  try {
+    const r = await api('/api/sessions', { method: 'POST', body: { language: LANG, product: PRODUCT === 'ins' ? 'insurance' : 'loan' } });
+    if (sessionGeneration !== generation) return;
+    SID = r.session_id;
+    localStorage.setItem(LS_SID, SID);
+    saveUI({ lastTurn: null });
+    chatEl.innerHTML = ''; dayChip();
+    TRACKER = r.tracker || {};
+    paintTurn(r); refreshPanels();
+  } catch (e) {
+    if (sessionGeneration !== generation) return;
+    chatEl.innerHTML = '';
+    bubble('bot', 'We could not connect to PayPilot. Please check your connection and select New chat to try again.');
+  } finally { if (sessionGeneration === generation) BUSY = false; }
+}
+
+/* Rebuild the conversation from the server after a reload. */
+async function restoreSession(sid) {
+  const restoreGeneration = generation;
+  const s = await api('/api/sessions/' + sid);          // throws if the session is gone
+  if (restoreGeneration !== generation) return false;
+  const ui = loadUI();
+  SID = sid;
+  localStorage.setItem(LS_SID, SID);
+  LANG = s.session.language || ui.lang || 'en';
+  PRODUCT = s.session.product === 'insurance' ? 'ins' : 'loan';
+  TRACKER = s.tracker || {};
+  document.querySelectorAll('#langRow button').forEach(b => b.classList.toggle('on', b.dataset.l === LANG));
+  document.querySelectorAll('#prodSeg button').forEach(b => b.classList.toggle('on', b.dataset.p === PRODUCT));
+
+  chatEl.innerHTML = '';
+  dayChip();
+  const msgs = s.messages || [];
+  msgs.forEach(m => bubble(m.role === 'user' ? 'user' : 'bot', m.content));
+  const d = document.createElement('div');
+  d.className = 'daychip';
+  d.innerHTML = '<span>RESUMED · ' + msgs.length + ' messages</span>';
+  chatEl.appendChild(d);
+
+  const lt = s.last_turn;
+  if (lt && lt.reply) {
+    const bots = chatEl.querySelectorAll('.msg.bot .bd');
+    if (bots.length) bots[bots.length - 1].textContent = lt.reply;
+  }
+  if (lt) renderConsent(lt.consent_request);
+  if (lt && lt.cards && lt.cards.length) { lt.cards.forEach(renderCard); }
+  if (lt && lt.chips && lt.chips.length && !(lt.cards || []).some(c => ['prefill', 'documents'].includes(c.type))) { renderChips(lt.chips); }
+  scroll();
+  refreshPanels();
+  saveUI({lastTurn: lt || null});
+  translateUI();
+  return true;
+}
+
+/* ---------------- input ---------------- */
+document.getElementById('sendBtn').onclick = () => { const v = inp.value.trim(); if (!v || BUSY || !SID) return; inp.value = ''; bubble('user', v); send(v); };
+inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const v = inp.value.trim(); if (!v || BUSY || !SID) return; inp.value = ''; bubble('user', v); send(v); } });
+document.getElementById('resetBtn').onclick = () => {
+  localStorage.removeItem(LS_SID);
+  localStorage.removeItem(LS_UI);
+  newSession();
+};
+document.querySelectorAll('#langRow button').forEach(b => {
+  b.onclick = async () => {
+    if (BUSY || LANG === b.dataset.l) return;
+    if (!SID) { LANG = b.dataset.l; translateUI(); return; }
+    BUSY = true;
+    try {
+      await api('/api/sessions/' + SID + '/language', {method:'PATCH', body:{language:b.dataset.l}});
+      await restoreSession(SID);
+    } catch { bubble('bot', 'Could not change language. Please try again.'); }
+    finally { BUSY = false; }
+  };
+});
+document.querySelectorAll('#prodSeg button').forEach(b => {
+  b.onclick = async () => {
+    if (BUSY) return;
+    if (PRODUCT === b.dataset.p && SID) return;
+    saveUI();
+    stopChat();
+    PRODUCT = b.dataset.p;
+    document.querySelectorAll('#prodSeg button').forEach(x => x.classList.toggle('on', x === b));
+    const saved = productSessions()[PRODUCT];
+    if (saved) {
+      BUSY = true;
+      try {
+        await api('/api/sessions/' + saved + '/language', {method:'PATCH', body:{language:LANG}});
+        await restoreSession(saved);
+        return;
+      } catch { /* Expired browser ownership or removed session: start again. */ }
+      finally { BUSY = false; }
+    }
+    await newSession();
+  };
+});
+
+/* voice — real Web Speech API where the browser has it */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const micBtn = document.getElementById('micBtn');
+if (!SR) { micBtn.style.opacity = '.4'; micBtn.title = 'Voice needs Chrome or Edge'; }
+micBtn.onclick = () => {
+  if (!SR) { bubble('bot', 'Voice input needs Chrome or Edge. Typing works everywhere.'); return; }
+  if (recognition) { recognition.abort(); recognition = null; return; }
+  if (BUSY || !SID) return;
+  const rec = new SR();
+  recognition = rec;
+  rec.lang = LANG === 'hi' ? 'hi-IN' : 'en-IN';
+  rec.interimResults = false; rec.maxAlternatives = 1;
+  micBtn.classList.add('live');
+  rec.onresult = ev => {
+    const said = ev.results[0][0].transcript;
+    bubble('user', said); send(said);
+  };
+  rec.onerror = () => bubble('bot', 'I could not hear that — try typing instead.');
+  rec.onend = () => { if (recognition === rec) recognition = null; micBtn.classList.remove('live'); };
+  rec.start();
+};
+
+(async () => {
+  try { hindi = await (await fetch('/static/hi.json')).json(); } catch {}
+  languageObserver = new MutationObserver(translateUI);
+  translateUI();
+  const saved = localStorage.getItem(LS_SID);
+  if (saved) {
+    try {
+      await restoreSession(saved);
+      return;
+    } catch (e) {
+      localStorage.removeItem(LS_SID);      // stale or deleted session: start clean
+    }
+  }
+  newSession();
+})();
+</script>
+</body>
+</html>

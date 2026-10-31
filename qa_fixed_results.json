@@ -1,0 +1,152 @@
+{
+  "users": 20,
+  "completed": 20,
+  "errors": [],
+  "requests": 210,
+  "seconds": 12.26,
+  "p50_ms": 1051,
+  "p95_ms": 1989,
+  "max_ms": 2879,
+  "details": [
+    {
+      "user": 17,
+      "product": "insurance",
+      "sid": "sess_99009c559e",
+      "step": "ins_done",
+      "messages": 15
+    },
+    {
+      "user": 18,
+      "product": "loan",
+      "sid": "sess_e82a1b6038",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 19,
+      "product": "insurance",
+      "sid": "sess_762d67f7fb",
+      "step": "ins_done",
+      "messages": 15
+    },
+    {
+      "user": 11,
+      "product": "insurance",
+      "sid": "sess_98c4a8e615",
+      "step": "ins_done",
+      "messages": 15
+    },
+    {
+      "user": 5,
+      "product": "insurance",
+      "sid": "sess_2c3b5daab7",
+      "step": "ins_done",
+      "messages": 15
+    },
+    {
+      "user": 9,
+      "product": "insurance",
+      "sid": "sess_b50f55f918",
+      "step": "ins_done",
+      "messages": 15
+    },
+    {
+      "user": 0,
+      "product": "loan",
+      "sid": "sess_78c18135f3",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 13,
+      "product": "insurance",
+      "sid": "sess_83ba9ac9d3",
+      "step": "ins_done",
+      "messages": 15
+    },
+    {
+      "user": 16,
+      "product": "loan",
+      "sid": "sess_3b9f08761e",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 4,
+      "product": "loan",
+      "sid": "sess_580052248d",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 10,
+      "product": "loan",
+      "sid": "sess_7aa872c2db",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 3,
+      "product": "insurance",
+      "sid": "sess_96bdef7796",
+      "step": "ins_done",
+      "messages": 15
+    },
+    {
+      "user": 7,
+      "product": "insurance",
+      "sid": "sess_5f9fa83da1",
+      "step": "ins_done",
+      "messages": 15
+    },
+    {
+      "user": 6,
+      "product": "loan",
+      "sid": "sess_58160279f9",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 1,
+      "product": "insurance",
+      "sid": "sess_f1bc69462a",
+      "step": "ins_done",
+      "messages": 15
+    },
+    {
+      "user": 8,
+      "product": "loan",
+      "sid": "sess_b339f59ee5",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 12,
+      "product": "loan",
+      "sid": "sess_488a329721",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 2,
+      "product": "loan",
+      "sid": "sess_82d9e18845",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 14,
+      "product": "loan",
+      "sid": "sess_022ab799a0",
+      "step": "offers",
+      "messages": 19
+    },
+    {
+      "user": 15,
+      "product": "insurance",
+      "sid": "sess_41b019ab7e",
+      "step": "ins_done",
+      "messages": 15
+    }
+  ]
+}
