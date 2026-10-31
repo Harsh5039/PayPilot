@@ -1,284 +1,605 @@
-# PayPilot — conversational financial journeys
+# PayPilot — Conversational Financial Journeys
 
-A co-pilot that runs inside the Paytm app. Sarvam-105B does the language; a
-deterministic engine does the money. Consent-gated data, mock partner APIs, and
-an auditable trail behind every number a customer sees.
+**An AI-powered financial co-pilot for Paytm.**
 
-Two journeys, both complete end to end: **loans** and **health insurance**.
+PayPilot brings conversational financial services into the Paytm app, helping users explore loans and health insurance through guided, consent-based journeys.
+
+Powered by **Sarvam-105B** for natural language understanding and a deterministic financial engine for calculations, eligibility, consent enforcement and application workflows.
+
+The platform combines AI-driven conversations with transparent financial calculations, progressive consent, mock partner integrations and an auditable activity trail.
+
+## Key Features
+
+PayPilot supports two end-to-end financial journeys:
+
+- **Personal Loans:** Discovery, financial health assessment, pre-eligibility, lender comparison, document verification, consent and application tracking.
+- **Health Insurance:** Plan discovery, proposal completion, underwriting simulation and policy issuance.
+
+### 1. Loan Discovery & Personalisation
+
+Users can explore loans based on:
+
+- Eight loan purposes: Education, Medical, Travel, Wedding, Business, Home Renovation, Debt Consolidation and Personal.
+- Desired loan amount.
+- Preferred tenure (12–60 months).
+- Comfortable monthly EMI budget.
+- Employment type.
+
+Users can modify their loan amount and tenure during comparison without restarting the journey or losing previously provided information.
+
+### 2. Financial Intelligence
+
+PayPilot generates a financial health snapshot using consented Paytm demo data.
+
+The snapshot includes:
+
+- Monthly income and spending by category.
+- Existing EMI obligations.
+- Disposable income.
+- Affordable EMI estimation.
+- Bureau score and its provider.
+- Financial eligibility indicators.
+
+**Important:** All eligibility results are labelled as *pre-eligibility*, never as loan approval.
+
+### 3. Intelligent Loan Comparison
+
+Users can compare lender offers based on:
+
+- Interest rate and APR.
+- Processing fees and GST.
+- Stamp duty.
+- Total interest and repayment amount.
+- EMI across 12, 24, 36, 48 and 60 months.
+- Prepayment conditions.
+- Lender-specific eligibility explanations.
+
+Comparison highlights include lowest interest rate, lowest total repayment, zero processing fee and flexible prepayment.
+
+Users can also compare two lenders side by side and explore complete amortisation schedules.
+
+### 4. Consent Management & Data Privacy
+
+PayPilot follows a progressive, purpose-specific consent model.
+
+Four separate consent stages are implemented:
+
+1. **Paytm Data Access:** Profile, income and KYC information.
+2. **Soft Bureau Enquiry:** Credit assessment without affecting the credit report.
+3. **Lender Data Sharing:** Sharing selected information and documents with the chosen lender.
+4. **Hard Bureau Enquiry:** Separate consent before final application submission.
+
+Each consent records:
+- Purpose of data access.
+- Exact fields being shared.
+- Recipient of the information.
+- Consent history and revocation status.
+
+Users can revoke active permissions, with all changes recorded in the consent ledger.
+
+### 5. Financial Conflict Detection
+
+PayPilot detects inconsistencies between user-provided information and available financial data.
+
+Examples:
+- Declared income versus actual salary credits.
+- Business loan purpose versus missing business transaction receipts.
+
+The journey pauses and requests clarification before proceeding.
+
+### 6. Document Verification
+
+Document requirements depend on lender policies and employment type.
+
+| Lender | Demo document requirements |
+|---|---|
+| ABC | Matched salary slip and bank statement |
+| Hero | Matched salary slip and bank statement |
+| Tata | Matched bank statement |
+| Self-employed | PAN and bank statement |
+
+The system extracts PDF text and validates selected fields against seeded Paytm demo information.
+
+Image-based documents require manual review.
+
+**Limitation:** PDF field matching does not authenticate the document with the issuing bank or payroll provider.
+
+### 7. Application Review & Approval
+
+Before submission, users see exactly what will be shared:
+
+- Personal and financial information.
+- Selected lender.
+- Uploaded documents.
+- Active consent permissions.
+- Loan terms and repayment details.
+
+No application is submitted until the user explicitly approves the final review.
+
+### 8. Application Tracking
+
+Every application receives a reference number and a five-step tracking timeline.
+
+Supported statuses include:
+
+- Submitted
+- Under Review
+- Documents Required
+- Approved
+- Rejected
+
+Additional capabilities:
+- Simulated lender decision timelines.
+- Notifications on status changes.
+- Explanations for rejections and document requests.
+- Downloadable application summaries.
+- Resumption of incomplete applications.
+- Historical application tracking.
+
+All lender decisions are simulated in this demonstration.
 
 ---
 
-## What the loan journey does
+## Technology Stack
 
-**Discovery** — purpose from eight real categories (education, medical, travel,
-wedding, business, home renovation, debt consolidation, personal), amount,
-preferred tenure 12–60 months, a comfortable EMI budget, and employment type.
-Amount and tenure can be changed at the comparison screen without restarting:
-consent and answers are kept.
+| Layer | Technology |
+|---|---|
+| AI / LLM | Sarvam-105B |
+| Backend | Python, FastAPI |
+| Frontend | HTML, CSS, JavaScript |
+| Database | SQLite |
+| Financial Engine | Deterministic Python services |
+| API | REST APIs |
+| Containerisation | Docker, Docker Compose |
+| Testing | Pytest, HTTP smoke tests, browser verification |
+| AI Integration | Sarvam API with tool calling |
 
-**Financial intelligence** — a health snapshot built from consented Paytm data:
-monthly income, spend by category, existing EMIs, disposable income, the EMI that
-income actually supports, and the bureau score with its provider. The result is
-labelled **pre-eligibility** everywhere, never approval, and every partner states
-why it qualifies you or does not.
+## System Architecture
 
-**Comparison** — interest rate *and* APR, processing fee with GST, stamp duty,
-total interest, total repayment, the EMI at 12/24/36/48/60 months, prepayment
-terms, and a one-line "why this lender". The set is annotated for lowest rate,
-lowest total, zero processing fee and most flexible prepayment. Any two can be
-compared side by side, and each offer opens a full amortisation schedule.
-
-**Consent** — four separate asks: Paytm data (profile, income, KYC), a soft
-bureau enquiry, sharing with the chosen lender plus document access, and finally
-a hard bureau enquiry before submission. Every scope carries its purpose and the
-exact fields it exposes; every grant records who receives the data; everything is
-revocable, with a full history.
-
-**Conflicts** — where what the customer said disagrees with what Paytm can see
-(declared income vs salary credits, business purpose vs no trading receipts), the
-journey stops and asks them to correct it before anything is submitted.
-
-**Documents (demo)** — lender-policy-dependent requirements (ABC and Hero:
-matched salary slip and bank statement; Tata: matched bank statement; self-employed:
-PAN and bank statement). Real PDF text content is validated against the seeded
-Paytm demo customer and status/reasons displayed. No independent bank/payroll
-issuer authentication is performed; image scans require manual review.
-
-**Review and approval** — a final screen showing exactly what will leave Paytm:
-every field, every document, the lender receiving it, the consents in play and
-the terms. Nothing is sent until the customer approves.
-
-**Tracking** — a reference number (PP-2026-004821), a five-step timeline,
-submitted → under review → documents required / approved / rejected, the lender's
-estimated decision time, notifications on every status change, an explanation for
-rejections and document requests, a downloadable summary, and resumption of an
-incomplete application.
-
----
-
-> **Demo repairs:** See [DEMO_GUIDE.md](DEMO_GUIDE.md) for the working demonstration and limitations. PDF content matching does not establish bank/payroll authenticity.
-
-## Quickstart
-
-### Docker (recommended)
-
-```bash
-docker compose up --build          # app → http://localhost:8000
-SARVAM_API_KEY=sk_... docker compose up --build   # with the live model
+```text
+              User
+               |
+               v
+       Paytm-style Interface
+         static/index.html
+               |
+               v
+        POST /api/chat
+               |
+               v
+         FastAPI Backend
+               |
+       +-------+-------+
+       |       |       |
+       v       v       v
+     Chat    Lending Insurance
+     APIs     APIs     APIs
+       |       |       |
+       +-------+-------+
+               |
+        Flow Controller
+          agent.py
+               |
+       +-------+--------+
+       |       |        |
+       v       v        v
+    Sarvam  Consent  Financial
+     AI     Engine   Intelligence
+       |       |        |
+       +-------+--------+
+               |
+               v
+         SQLite Database
+               |
+       Audit / Tracking /
+       Consent / Documents
 ```
 
-### Local
+### AI and Financial Safety
+
+PayPilot separates language understanding from financial decision-making.
+
+**Sarvam-105B handles:**
+- Natural language understanding.
+- Slot extraction.
+- Conversational responses.
+- Read-only tool calling.
+
+**The deterministic engine handles:**
+- Financial calculations.
+- EMI and APR.
+- Eligibility rules.
+- Consent enforcement.
+- Document validation.
+- Application state transitions.
+- Audit logging.
+
+The AI agent cannot independently grant consent, create applications, upload documents or approve loans.
+
+Every financial data read passes through the same consent checks used by the REST APIs.
+
+---
+
+## What Is Real vs. Simulated?
+
+Transparency is central to PayPilot.
+
+| Component | Implementation |
+|---|---|
+| Sarvam-105B integration | Real API calls when configured |
+| Conversation and flow controller | Deterministic implementation |
+| Consent ledger | Implemented and enforced |
+| Financial health calculations | Deterministic |
+| EMI, APR and amortisation | Deterministic calculations |
+| Eligibility and conflict detection | Implemented |
+| Paytm profile, income and transactions | Mock demo data |
+| Credit bureau score | Simulated |
+| Lender offers and decisions | Mock partner APIs |
+| Insurance plans and underwriting | Mock partner APIs |
+| PDF text extraction | Real extraction with demo-data matching |
+| Application tracking and audit trail | Implemented with simulated partner events |
+
+All mock integrations are isolated behind individual service modules, allowing partner integrations to be replaced independently.
+
+---
+
+## Project Structure
+
+```text
+PayPilot/
+│
+├── app/
+│   ├── routers/
+│   │   ├── chat.py
+│   │   ├── data.py
+│   │   ├── lending.py
+│   │   └── insurance.py
+│   │
+│   ├── services/
+│   │   ├── agent.py
+│   │   ├── sarvam.py
+│   │   ├── consent.py
+│   │   ├── eligibility.py
+│   │   ├── lending.py
+│   │   ├── insurance.py
+│   │   └── emi.py
+│   │
+│   ├── seed.py
+│   ├── db.py
+│   └── main.py
+│
+├── static/
+│   └── index.html
+│
+├── tests/
+│
+├── Dockerfile
+├── docker-compose.yml
+├── render.yaml
+├── requirements.txt
+├── .env.example
+├── smoke.py
+├── verify_persist.py
+├── DEMO_GUIDE.md
+└── README.md
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- Docker and Docker Compose (recommended)
+- Sarvam API key (optional)
+
+### Option 1: Docker (Recommended)
+
+Clone the repository:
 
 ```bash
-python3 -m venv .venv && . .venv/bin/activate
+git clone https://github.com/Harsh5039/PayPilot.git
+cd PayPilot
+```
+
+Start the application:
+
+```bash
+docker compose up --build
+```
+
+Open:
+
+```text
+http://localhost:8000
+```
+
+To enable live Sarvam-105B integration, configure `SARVAM_API_KEY` in your environment before starting the application.
+
+### Option 2: Local Setup
+
+Clone the repository and navigate to the project directory.
+
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate it on Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+On Linux/macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
+```
+
+Create your environment configuration:
+
+```bash
 cp .env.example .env
+```
+
+On Windows, you can copy `.env.example` to `.env` using File Explorer.
+
+Start the application:
+
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-**It runs with no API key.** Without `SARVAM_API_KEY` the deterministic rule
-agent handles understanding and every journey still completes; `/api/health`
-reports `mode: offline-rule-agent`. With a key the tool-calling agent comes
-online. `DEPLOY.md` covers Render, Fly, Railway and a VPS.
+Open `http://localhost:8000`.
 
----
+### Running Without an API Key
 
-## What is real and what is mocked
+PayPilot supports offline operation.
 
-| Piece | Status |
-| --- | --- |
-| Sarvam-105B chat + tool calling | Real API call when a key is set |
-| Flow controller, consent ledger, eligibility, APR, comparison, state machines, notifications, audit | Real, deterministic, tested |
-| Paytm profile / income / spend / KYC | Mocked in `app/seed.py`, consent-gated |
-| Bureau score | Mocked (`CIBIL-MOCK-88231`, 762, TransUnion CIBIL) |
-| Lender quote / submit / decision | Mocked in `app/services/lending.py` |
-| Insurer plans / underwriting / issuance | Mocked in `app/services/insurance.py` |
-| PDF validation | Extracts real PDF text and checks selected fields against demo Paytm facts; **not issuer authenticity verification** |
+Without `SARVAM_API_KEY`, the deterministic rule-based conversational agent handles the journey.
 
-Every mock sits behind one module, so replacing a partner is a single-file change.
+With a valid API key, the Sarvam-105B tool-calling integration becomes available.
 
----
+Check the application mode:
 
-## Architecture
-
-```
-Browser (static/index.html — phone + Tracker / Consent ledger / Audit trail)
-   │  POST /api/chat  {session_id, text | choice}
-   ▼
-FastAPI routers ── chat · data · lending · insurance
-   │
-   ├── services/agent.py       flow controller + bilingual copy, both journeys
-   ├── services/sarvam.py      Sarvam-105B: slot extraction, read-only tool loop
-   ├── services/consent.py     progressive consent, enforced on every read
-   ├── services/eligibility.py health snapshot, FOIR rules, conflict detection
-   ├── services/lending.py     offers, APR, documents, review, lifecycle, notifications
-   ├── services/insurance.py   insurer adapters
-   ├── services/emi.py         EMI, amortisation, APR
-   └── db.py                   SQLite: sessions, consent ledger, applications, policies,
-                               documents, notifications, audit
+```text
+GET /api/health
 ```
 
-**Division of labour.** The model understands language and may call read-only
-tools — profile, income, eligibility, offers, EMI, application status, consent
-ledger. It cannot create an application, grant consent, upload a document or
-approve anything. Those live in the flow controller behind an explicit user
-action, and every tool read passes the same consent gate as the REST API.
+The offline mode reports:
+
+```json
+{
+  "mode": "offline-rule-agent"
+}
+```
 
 ---
 
-## Endpoints
+## API Documentation
 
-### Chat
-| Method | Path | Purpose |
-| --- | --- | --- |
+FastAPI automatically generates interactive API documentation.
+
+Once the application is running:
+
+- Swagger UI: `http://localhost:8000/docs`
+- Health Check: `http://localhost:8000/api/health`
+
+### Core API Endpoints
+
+**Chat & Sessions**
+
+| Method | Endpoint | Description |
+|---|---|---|
 | POST | `/api/sessions` | Create a session |
-| POST | `/api/chat` | One turn — `text` for free text, `choice` for a chip |
-| GET | `/api/sessions/{id}` | Step, slots, tracker, messages, applications, notifications |
-| GET | `/api/sessions/{id}/messages` | Chronological transcript |
-| GET | `/api/sessions/{id}/audit` | Full audit trail |
-| GET | `/api/sessions/{id}/notifications` | Status-change notifications |
+| POST | `/api/chat` | Send a conversational turn |
+| GET | `/api/sessions/{id}` | Retrieve session state |
+| GET | `/api/sessions/{id}/messages` | Retrieve conversation history |
+| GET | `/api/sessions/{id}/audit` | Retrieve audit trail |
+| GET | `/api/sessions/{id}/notifications` | Retrieve notifications |
 
-`POST /api/chat` returns `reply`, `chips`, `cards`, `consent_request`, `tracker`,
-`notifications` and `step`. Card types: `snapshot`, `offers`, `conflicts`,
-`prefill`, `documents`, `review`, `status`, `plans`, `proposal`, `policy`.
+**Consent Management**
 
-### Consent
-| Method | Path | Purpose |
-| --- | --- | --- |
-| GET | `/api/consent/catalogue` | Every scope, grouped, with purpose and data fields |
-| GET | `/api/sessions/{id}/consent` | Active scopes, ledger and history |
-| POST | `/api/sessions/{id}/consent` | Grant, with purpose and `shared_with` |
-| DELETE | `/api/sessions/{id}/consent/{scope}` | Revoke |
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/consent/catalogue` | View consent scopes |
+| GET | `/api/sessions/{id}/consent` | View consent history |
+| POST | `/api/sessions/{id}/consent` | Grant consent |
+| DELETE | `/api/sessions/{id}/consent/{scope}` | Revoke consent |
 
-Scopes: `paytm.profile`, `paytm.income`, `paytm.kyc`, `paytm.transactions`,
-`bureau.softpull`, `bureau.hardpull`, `lender.share`, `documents.access`.
+**Loan & Financial Intelligence**
 
-### Discovery, money and eligibility
-| Method | Path | Purpose |
-| --- | --- | --- |
-| GET | `/api/loan/purposes` | Purpose list and supported tenures |
-| GET | `/api/lenders` | Partner catalogue and published rules |
-| GET | `/api/loans/emi` | EMI, total interest, APR, amortisation schedule |
-| GET | `/api/sessions/{id}/financial-health` | Health snapshot (needs `paytm.income`) |
-| POST | `/api/sessions/{id}/loans/eligibility` | Pre-eligibility, per-partner reasons |
-| GET | `/api/sessions/{id}/conflicts` | Detected mismatches |
-| POST | `/api/sessions/{id}/loans/compare` | Offers with APR, charges, EMI by tenure, highlights |
-| POST | `/api/sessions/{id}/loans/compare-selected` | Side-by-side for chosen offers |
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/loan/purposes` | Retrieve loan categories |
+| GET | `/api/lenders` | Retrieve lender catalogue |
+| GET | `/api/loans/emi` | Calculate EMI and amortisation |
+| GET | `/api/sessions/{id}/financial-health` | Financial health snapshot |
+| POST | `/api/sessions/{id}/loans/eligibility` | Check pre-eligibility |
+| GET | `/api/sessions/{id}/conflicts` | Retrieve financial conflicts |
+| POST | `/api/sessions/{id}/loans/compare` | Compare lender offers |
+| POST | `/api/sessions/{id}/loans/compare-selected` | Compare selected lenders |
 
-### Applications
-| Method | Path | Purpose |
-| --- | --- | --- |
-| POST | `/api/sessions/{id}/applications` | Create (needs `lender.share`) |
-| GET | `/api/sessions/{id}/applications?resumable=true` | Resume an incomplete one |
-| POST | `/api/applications/{id}/documents/{doc_type}` | Upload + content validation (PDF; PNG/JPEG manual review, ≤8 MB) |
-| GET | `/api/applications/{id}/documents` | Required, uploaded and missing |
-| GET | `/api/applications/{id}/review` | Exactly what will be shared |
-| POST | `/api/applications/{id}/approve` | Explicit approval (needs `bureau.hardpull`) |
-| POST | `/api/applications/{id}/advance` | Simulate the lender's next step |
-| GET | `/api/applications/{id}` | Tracking: status and event timeline |
-| GET | `/api/applications/{id}/summary` | Terms, cost, schedule, documents, timeline |
+**Applications & Documents**
 
-### Insurance
-`GET /api/insurance/plans` · `POST /api/sessions/{id}/insurance/policies` ·
-`POST /api/policies/{id}/declare` · `POST /api/policies/{id}/pay`
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/sessions/{id}/applications` | Create application |
+| GET | `/api/sessions/{id}/applications` | Retrieve applications |
+| POST | `/api/applications/{id}/documents/{doc_type}` | Upload document |
+| GET | `/api/applications/{id}/documents` | Retrieve document status |
+| GET | `/api/applications/{id}/review` | Review application data |
+| POST | `/api/applications/{id}/approve` | Explicit approval |
+| POST | `/api/applications/{id}/advance` | Simulate partner progression |
+| GET | `/api/applications/{id}` | Track application |
+| GET | `/api/applications/{id}/summary` | Downloadable summary |
 
-### State machines
+**Health Insurance**
 
+```text
+GET  /api/insurance/plans
+POST /api/sessions/{id}/insurance/policies
+POST /api/policies/{id}/declare
+POST /api/policies/{id}/pay
 ```
-loan:    created → documents_verified → submitted → under_review
-                → approved | rejected | documents_required
-policy:  quoted → proposal_complete → issued
-```
-
-Out-of-order transitions return **409**. `decided_by` is always `"partner"` —
-the agent has no path to an approval.
 
 ---
+
+## State Management
+
+Loan application lifecycle:
+
+```text
+Created
+   |
+   v
+Documents Verified
+   |
+   v
+Submitted
+   |
+   v
+Under Review
+   |
+   +------> Approved
+   |
+   +------> Rejected
+   |
+   +------> Documents Required
+```
+
+Insurance policy lifecycle:
+
+```text
+Quoted
+   |
+   v
+Proposal Complete
+   |
+   v
+Issued
+```
+
+Out-of-order state transitions are rejected.
+
+Partner decisions are explicitly marked as simulated, and the AI agent has no direct approval capability.
 
 ## Persistence
 
-The session id lives in `localStorage`, so a reload resumes the conversation
-instead of starting a new one. On boot the page calls `GET /api/sessions/{id}`,
-rebuilds the transcript from the server's messages, restores language, product,
-step, slots and tracker, and re-renders the current turn's cards and chips. A
-stale id falls back to a fresh session; **New Session** clears it deliberately.
+PayPilot uses SQLite to maintain:
 
-`GET /api/sessions/{id}` returns `messages` (chronological) and `message_count`;
-`GET /api/sessions/{id}/messages` returns the transcript alone.
+- User sessions.
+- Conversation history.
+- Consent records.
+- Loan applications.
+- Insurance policies.
+- Uploaded document metadata.
+- Notifications.
+- Audit events.
 
-`GET /api/sessions/{id}/applications` returns **every** application for the
-session — approved, rejected, pending and in progress — newest first. The
-`resumable=true` flag narrows that to the unfinished ones. The **Applications**
-tab lists them all and opens any one of them to its terms, reference, documents
-and timeline. Starting another loan never removes an earlier application.
+The frontend stores the session ID in local storage and restores the conversation from the backend after a page reload.
 
-The database path is resolved against the project root, not the process working
-directory, so the same SQLite file is found however the server is started.
-`init_db()` only creates tables and applies additive column migrations — it never
-drops or recreates anything, so data survives restarts and redeploys.
+Existing applications remain accessible even when users start a new loan journey.
 
-## Financial safety
+The database initialization uses additive migrations rather than dropping and recreating existing tables.
 
-- If every offer's EMI is above the declared budget, the agent says so, does not
-  offer a one-tap apply, and points at a smaller amount or a longer tenure.
-- Declared income is checked against Paytm salary credits and any mismatch must
-  be confirmed before consent is requested.
-- Soft and hard bureau enquiries are separate scopes; `bureau.softpull` carries
-  `affects_credit_report: false`, `bureau.hardpull` carries `true`.
-- Submission is refused (403) without `bureau.hardpull`, and an application
-  cannot be created without `lender.share`.
-- Credit scores, lender quotes, decisions and disbursal timings all
-  carry `simulated: true`, and the UI labels them as simulated. An approval is
-  never presented as a real sanction.
+**Deployment note:** Configure persistent storage for SQLite in production. Temporary container filesystems may lose data after restarts or redeployments.
 
-## Frontend
+## Financial Safety & Guardrails
 
-`static/index.html` — one file, no build step, no framework.
+PayPilot incorporates several safeguards:
 
-- Phone frame with chat, chips and typed cards
-- **Tracker** — live application state and step timeline
-- **Consent ledger** — every scope with purpose, expiry, recipient and a working **Revoke**
-- **Audit trail** — request-level log
-- Health snapshot, conflict resolution, tenure bar, EMI-by-tenure, "why this lender"
-- Repayment schedule and side-by-side comparison in modals
-- Per-document PDF field matching and manual-review/rejection reasons shown inline
-- Final review card and explicit approval
-- Status timeline with reference number and **Download summary** (printable HTML)
-- Voice input through the Web Speech API (Chrome/Edge), Hindi or English
+- Pre-eligibility is never represented as loan approval.
+- EMI affordability is checked against the declared budget.
+- Income discrepancies must be resolved before proceeding.
+- Soft and hard bureau enquiries require separate consent.
+- Application creation requires lender-sharing consent.
+- Final submission requires hard bureau consent and explicit user approval.
+- Consent revocation is recorded.
+- Financial calculations are handled by deterministic services.
+- Credit scores, lender decisions and disbursal timelines are labelled as simulated.
 
----
+## Testing
 
-## Tests
+Run the test suite:
 
 ```bash
-pytest -q          # 29 tests, no network needed
+pytest -q
 ```
 
-Covers the consent gate and revocation history, grouped catalogue and
-`shared_with`, EMI and APR (including the zero-fee case where APR equals the
-rate), the health snapshot arithmetic, comparison fields and highlights, budget
-flagging, side-by-side, the full journey to approval, amount and tenure changes
-without restart, conflict detection and resolution, documents required → resume →
-decision, file-type rejection, review and summary, hard-consent enforcement,
-insurance end to end, Hindi input, and the tool layer refusing to read without
-consent.
+The project includes 29 tests covering:
 
-`python smoke.py` boots the real server and walks both journeys over HTTP.
-`python verify_persist.py` drives a real browser through the section-7 checks:
-complete a loan, reload, restart the server, start a second loan, and read the
-history.
+- Consent enforcement and revocation.
+- Financial health calculations.
+- EMI and APR calculations.
+- Lender comparisons.
+- Budget validation.
+- Conflict detection.
+- Document validation.
+- Application lifecycle.
+- Explicit approval requirements.
+- Insurance workflows.
+- Hindi conversational input.
+- Tool-level consent restrictions.
 
----
+Additional verification scripts:
+
+```bash
+python smoke.py
+python verify_persist.py
+```
+
+`smoke.py` exercises both journeys over HTTP.
+
+`verify_persist.py` checks browser-level persistence across page reloads and server restarts.
 
 ## Configuration
 
-| Variable | Default | Notes |
-| --- | --- | --- |
-| `SARVAM_API_KEY` | *(blank)* | Blank ⇒ offline rule agent |
-| `SARVAM_BASE_URL` | `https://api.sarvam.ai/v1` | |
-| `SARVAM_MODEL` | `sarvam-105b` | `sarvam-105b-conversations` also works |
-| `SARVAM_TIMEOUT` | `20` | Seconds |
-| `DATABASE_PATH` | `paypilot.db` | `/data/paypilot.db` under Docker |
-| `CONSENT_TTL_DAYS` | `30` | Consent expiry |
+| Variable | Default | Description |
+|---|---|---|
+| `SARVAM_API_KEY` | Blank | Sarvam API authentication |
+| `SARVAM_BASE_URL` | `https://api.sarvam.ai/v1` | API base URL |
+| `SARVAM_MODEL` | `sarvam-105b` | Language model |
+| `SARVAM_TIMEOUT` | `20` | API timeout in seconds |
+| `DATABASE_PATH` | `paypilot.db` | SQLite database path |
+| `CONSENT_TTL_DAYS` | `30` | Consent validity period |
 
-Never commit `.env`. The key is read from the environment only.
+**Security:** Never commit `.env`, API keys, credentials or real customer financial documents to GitHub.
+
+---
+
+## Demo & Deployment
+
+For the working demonstration, demo data and known limitations, see:
+
+- [`DEMO_GUIDE.md`](DEMO_GUIDE.md)
+- [`DEPLOY.md`](DEPLOY.md)
+
+The application supports Docker-based deployment and can be configured for platforms such as Render, Fly.io and Railway.
+
+## Important Disclaimer
+
+PayPilot is a demonstration prototype built using mock financial institutions, simulated credit bureau information and seeded customer data.
+
+It is not connected to live Paytm customer accounts, actual credit bureaus, banks or insurance providers.
+
+It does not issue real loans, approve credit applications, authenticate financial documents with their issuers or issue actual insurance policies.
+
+All financial information and partner decisions in the demonstration must be treated as simulated.
+
+## Vision
+
+**Making financial services conversational, transparent and consent-driven.**
+
+PayPilot demonstrates how conversational AI and deterministic financial systems can work together to make complex financial journeys easier to understand while keeping users in control of their data and decisions.
+
+---
+
+**Built with Python, FastAPI, Sarvam-105B and a consent-first financial engine.**
